@@ -1,16 +1,28 @@
 package com.bakulabs.twittervideodownloader.downloader
 
+import android.content.ClipDescription.MIMETYPE_TEXT_PLAIN
+import android.content.ClipboardManager
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
-import androidx.compose.runtime.Composable
 import com.bakulabs.twittervideodownloader.ui.theme.DownloaderTheme
 
 class DownloaderActivity : AppCompatActivity() {
-    private val downloaderViewModel by viewModels<DownloaderViewModel>()
+    private val viewModel by viewModels<DownloaderViewModel>()
+
+    private fun getClipboardText(): String {
+        val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+
+        return if(clipboard.hasPrimaryClip() && clipboard.primaryClipDescription?.hasMimeType(MIMETYPE_TEXT_PLAIN) == true) {
+            clipboard.primaryClip!!.getItemAt(0).text.toString()
+        } else {
+            ""
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -18,17 +30,14 @@ class DownloaderActivity : AppCompatActivity() {
             DownloaderTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
-                    DownloaderActivityScreen(viewModel = downloaderViewModel)
+                    DownloaderScreen(
+                        variants = viewModel.variants,
+                        onFetchVariants = {viewModel.fetchVariants(it)},
+                        onDownloadVariant = {viewModel.downloadVariant(it)},
+                        getClipboardText = {getClipboardText()}
+                    )
                 }
             }
         }
     }
-}
-
-@Composable fun DownloaderActivityScreen(viewModel: DownloaderViewModel) {
-    DownloaderScreen(
-        variants = viewModel.variants,
-        onFetchVariants = {viewModel.fetchVariants(it)},
-        onDownloadVariant = {viewModel.downloadVariant(it)}
-    )
 }
