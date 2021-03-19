@@ -7,17 +7,14 @@ import androidx.lifecycle.ViewModel
 import com.bakulabs.twittervideodownloader.domain.Variant
 
 class DownloaderViewModel: ViewModel() {
-    var url: String by mutableStateOf("")
-        private set
-
     var variants: List<Variant> by mutableStateOf(listOf())
         private set
 
-    fun fetchVariants() {
+    fun fetchVariants(tweetUrl: String) {
         // TODO: call service to update variants
     }
 
-    fun downloadVariant(index: Int) {
+    fun downloadVariant(variantUrl: String) {
         // TODO: download variant
     }
 }
