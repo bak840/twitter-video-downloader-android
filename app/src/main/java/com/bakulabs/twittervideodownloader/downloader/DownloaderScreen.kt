@@ -17,31 +17,88 @@ import androidx.compose.ui.unit.dp
 import com.bakulabs.twittervideodownloader.R
 import com.bakulabs.twittervideodownloader.domain.Variant
 import com.bakulabs.twittervideodownloader.ui.theme.DownloaderTheme
+import androidx.compose.material.rememberModalBottomSheetState
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 
+@ExperimentalMaterialApi
 @Composable
 fun DownloaderScreen(
     variants: List<Variant>,
-    onFetchVariants: (String) -> Unit,
-    onDownloadVariant: (String) -> Unit,
+    getVariants: (String) -> Unit,
+    downloadVariant: (String) -> Unit,
     getClipboardText: () -> String
 ) {
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.home_title)) }
-            )
+    val state = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
+    val scope = rememberCoroutineScope()
+
+    ModalBottomSheetLayout(
+        sheetState = state,
+        sheetContent = {
+            Column(Modifier.padding(8.dp)) {
+                Text(text = stringResource(R.string.videos_sheet_title))
+                Spacer(modifier = Modifier.height(16.dp))
+                for (variant in variants) {
+                    Row(
+                        modifier = Modifier.padding(vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(text = variant.definition)
+                        Spacer(modifier = Modifier.weight(1f))
+                        Text(text = variant.size)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        IconButton(onClick = { downloadVariant(variant.url) }) {
+                            Icon(imageVector = Icons.Default.FileDownload, contentDescription = null)
+                        }
+                    }
+                }
+            }
         }
     ) {
-        Column {
-            UrlRow(onFetchVariants, getClipboardText)
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text(stringResource(R.string.home_title)) }
+                )
+            }
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp)
+            ) {
+                val (url, setUrl) = remember { mutableStateOf("") }
 
-            if (variants.isEmpty()) {
-                Text(text = stringResource(R.string.instructions))
-            } else {
-                Column {
-                    Text(text = stringResource(R.string.variants_section_title))
-                    for (variant in variants) {
-                        VariantRow(variant = variant, onDownloadVariant = { onDownloadVariant(it) })
+                OutlinedTextField(
+                    value = url,
+                    onValueChange = { setUrl(it) },
+                    modifier = Modifier.fillMaxWidth(),
+                    placeholder = { Text(text = stringResource(R.string.url_field_placeholder)) },
+                    singleLine = true,
+                    trailingIcon = {
+                        IconButton(onClick = { setUrl("") }) {
+                            Icon(
+                                Icons.Default.Clear,
+                                contentDescription = stringResource(R.string.url_field_clear),
+                                tint = Color.Black
+                            )
+                        }
+                    }
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(
+                    modifier = Modifier,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Button(onClick = { setUrl(getClipboardText()) }) {
+                        Text(text = stringResource(R.string.paste_button_text))
+                    }
+                    Spacer(modifier = Modifier.weight(1f))
+                    Button(
+                        onClick = {
+                            getVariants(url)
+                            scope.launch { state.show() }
+                        }
+                    ) {
+                        Text(text = stringResource(R.string.button_download_text))
                     }
                 }
             }
@@ -49,68 +106,7 @@ fun DownloaderScreen(
     }
 }
 
-@Composable
-private fun UrlRow(
-    onFetchVariants: (String) -> Unit,
-    getClipboardText: () -> String,
-) {
-    Column(
-        modifier = Modifier.padding(16.dp)
-    ) {
-        val (url, setUrl) = remember { mutableStateOf("") }
-
-        OutlinedTextField(
-            value = url,
-            onValueChange = { setUrl(it) },
-            modifier = Modifier.fillMaxWidth(),
-            placeholder = { Text(text = stringResource(R.string.url_field_placeholder)) },
-            singleLine = true,
-            trailingIcon = {
-                IconButton(onClick = { setUrl("") }) {
-                    Icon(
-                        Icons.Default.Clear,
-                        contentDescription = stringResource(R.string.url_field_clear),
-                        tint = Color.Black
-                    )
-                }
-            }
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Row(
-            modifier = Modifier,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Button(onClick = { setUrl(getClipboardText()) }) {
-                Text(text = stringResource(R.string.paste_button_text))
-            }
-            Spacer(modifier = Modifier.weight(1f))
-            Button(onClick = { onFetchVariants(url) }) {
-                Text(text = stringResource(R.string.button_download_text))
-            }
-        }
-    }
-
-}
-
-@Preview(showBackground = true)
-@Composable
-fun UrlRowPreview() {
-    Surface(color = Color.White) {
-        UrlRow({}, { "" })
-    }
-}
-
-@Composable
-fun VariantRow(variant: Variant, onDownloadVariant: (String) -> Unit) {
-    Row {
-        Text(text = variant.definition)
-        Text(text = variant.size)
-        Button(onClick = { onDownloadVariant(variant.url) }) {
-            Icon(imageVector = Icons.Default.FileDownload, contentDescription = null)
-        }
-    }
-}
-
+@ExperimentalMaterialApi
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {

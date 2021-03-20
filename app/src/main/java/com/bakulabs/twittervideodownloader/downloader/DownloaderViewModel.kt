@@ -10,8 +10,12 @@ class DownloaderViewModel: ViewModel() {
     var variants: List<Variant> by mutableStateOf(listOf())
         private set
 
-    fun fetchVariants(tweetUrl: String) {
+    fun getVariants(tweetUrl: String) {
         // TODO: call service to update variants
+        variants = listOf(
+            Variant("", "1920x1080", "36 kB"),
+            Variant("", "1280x720","18 kB" )
+        )
     }
 
     fun downloadVariant(variantUrl: String) {

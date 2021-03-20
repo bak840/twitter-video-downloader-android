@@ -7,6 +7,7 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import com.bakulabs.twittervideodownloader.ui.theme.DownloaderTheme
@@ -24,6 +25,7 @@ class DownloaderActivity : AppCompatActivity() {
         }
     }
 
+    @ExperimentalMaterialApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -32,8 +34,8 @@ class DownloaderActivity : AppCompatActivity() {
                 Surface(color = MaterialTheme.colors.background) {
                     DownloaderScreen(
                         variants = viewModel.variants,
-                        onFetchVariants = {viewModel.fetchVariants(it)},
-                        onDownloadVariant = {viewModel.downloadVariant(it)},
+                        getVariants = {viewModel.getVariants(it)},
+                        downloadVariant = {viewModel.downloadVariant(it)},
                         getClipboardText = {getClipboardText()}
                     )
                 }

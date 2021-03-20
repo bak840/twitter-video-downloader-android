@@ -7,4 +7,5 @@
     <string name="button_download_text">Download</string>
     <string name="url_field_placeholder">Paste link here</string>
     <string name="url_field_clear">Clear field</string>
+    <string name="videos_sheet_title">Videos</string>
 </resources>
