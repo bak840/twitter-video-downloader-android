@@ -32,6 +32,8 @@ fun DownloaderScreen(
     val state = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
     val scope = rememberCoroutineScope()
 
+    val (isLoading, setIsLoading) = remember { mutableStateOf(false) }
+
     ModalBottomSheetLayout(
         sheetState = state,
         sheetContent = {
@@ -48,7 +50,10 @@ fun DownloaderScreen(
                         Text(text = variant.size)
                         Spacer(modifier = Modifier.width(8.dp))
                         IconButton(onClick = { downloadVariant(variant.url) }) {
-                            Icon(imageVector = Icons.Default.FileDownload, contentDescription = null)
+                            Icon(
+                                imageVector = Icons.Default.FileDownload,
+                                contentDescription = null
+                            )
                         }
                     }
                 }
@@ -62,48 +67,72 @@ fun DownloaderScreen(
                 )
             }
         ) {
-            Column(
-                modifier = Modifier.padding(16.dp)
-            ) {
-                val (url, setUrl) = remember { mutableStateOf("") }
-
-                OutlinedTextField(
-                    value = url,
-                    onValueChange = { setUrl(it) },
-                    modifier = Modifier.fillMaxWidth(),
-                    placeholder = { Text(text = stringResource(R.string.url_field_placeholder)) },
-                    singleLine = true,
-                    trailingIcon = {
-                        IconButton(onClick = { setUrl("") }) {
-                            Icon(
-                                Icons.Default.Clear,
-                                contentDescription = stringResource(R.string.url_field_clear),
-                                tint = Color.Black
-                            )
-                        }
-                    }
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(
-                    modifier = Modifier,
-                    verticalAlignment = Alignment.CenterVertically,
+            LoadingScreen(isLoading = isLoading, setIsLoading = { setIsLoading(it) }) {
+                Column(
+                    modifier = Modifier.padding(16.dp)
                 ) {
-                    Button(onClick = { setUrl(getClipboardText()) }) {
-                        Text(text = stringResource(R.string.paste_button_text))
-                    }
-                    Spacer(modifier = Modifier.weight(1f))
-                    Button(
-                        onClick = {
-                            getVariants(url)
-                            scope.launch { state.show() }
+                    val (url, setUrl) = remember { mutableStateOf("") }
+
+                    OutlinedTextField(
+                        value = url,
+                        onValueChange = { setUrl(it) },
+                        modifier = Modifier.fillMaxWidth(),
+                        placeholder = { Text(text = stringResource(R.string.url_field_placeholder)) },
+                        singleLine = true,
+                        trailingIcon = {
+                            IconButton(onClick = { setUrl("") }) {
+                                Icon(
+                                    Icons.Default.Clear,
+                                    contentDescription = stringResource(R.string.url_field_clear),
+                                    tint = Color.Black
+                                )
+                            }
                         }
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier,
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Text(text = stringResource(R.string.button_download_text))
+                        Button(onClick = { setUrl(getClipboardText()) }) {
+                            Text(text = stringResource(R.string.paste_button_text))
+                        }
+                        Spacer(modifier = Modifier.weight(1f))
+                        Button(
+                            onClick = {
+                                getVariants(url)
+                                scope.launch { state.show() }
+                            }
+                        ) {
+                            Text(text = stringResource(R.string.button_download_text))
+                        }
                     }
+                    // Button(onClick = { setIsLoading(true) }) { Text(text = "Start") }
                 }
             }
         }
     }
+}
+
+@Composable
+fun LoadingScreen(
+    isLoading: Boolean,
+    setIsLoading: (Boolean) -> Unit,
+    content: @Composable () -> Unit
+) = if (isLoading
+) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier.align(Alignment.Center),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(text = stringResource(R.string.loading_text))
+            CircularProgressIndicator()
+            // Button(onClick = { setIsLoading(false) }) { Text(text = "Stop") }
+        }
+    }
+} else {
+    content()
 }
 
 @ExperimentalMaterialApi
