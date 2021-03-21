@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">TwitterVideoDownloader</string>
+    <string name="home_title">Home</string>
+    <string name="instructions">Enter the tweet URL and click on the refresh button</string>
+    <string name="variants_section_title">Videos</string>
+    <string name="paste_button_text">Paste link</string>
+    <string name="button_download_text">Download</string>
+    <string name="url_field_placeholder">Paste link here</string>
+    <string name="url_field_clear">Clear field</string>
+    <string name="videos_sheet_title">Videos</string>
+    <string name="loading_text">Loading</string>
 </resources>
