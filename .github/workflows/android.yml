@@ -23,6 +23,7 @@ jobs:
         run: ./gradlew testDebugUnitTest
 
   build:
+    needs: test
     name: Generate APK
     runs-on: ubuntu-latest
 
