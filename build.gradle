@@ -2,6 +2,8 @@
 buildscript {
     ext {
         compose_version = '1.0.0-beta02'
+        version_retrofit = "2.9.0"
+        version_moshi = "1.9.3"
     }
     repositories {
         google()
