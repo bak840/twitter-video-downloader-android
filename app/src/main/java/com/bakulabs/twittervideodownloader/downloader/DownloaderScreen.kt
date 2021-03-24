@@ -19,8 +19,12 @@ import com.bakulabs.twittervideodownloader.domain.Variant
 import com.bakulabs.twittervideodownloader.ui.theme.DownloaderTheme
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import com.bakulabs.twittervideodownloader.util.isTweetUrlValid
 import kotlinx.coroutines.launch
 
+@ExperimentalComposeUiApi
 @ExperimentalMaterialApi
 @Composable
 fun DownloaderScreen(
@@ -29,13 +33,18 @@ fun DownloaderScreen(
     downloadVariant: (String) -> Unit,
     getClipboardText: () -> String
 ) {
-    val state = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    val scaffoldState = rememberScaffoldState()
+    val sheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
     val scope = rememberCoroutineScope()
 
     val (isLoading, setIsLoading) = remember { mutableStateOf(false) }
 
+    val invalidUrlText = stringResource(id = R.string.tweet_url_invalid)
+
     ModalBottomSheetLayout(
-        sheetState = state,
+        sheetState = sheetState,
         sheetContent = {
             Column(Modifier.padding(8.dp)) {
                 Text(text = stringResource(R.string.videos_sheet_title))
@@ -61,6 +70,7 @@ fun DownloaderScreen(
         }
     ) {
         Scaffold(
+            scaffoldState = scaffoldState,
             topBar = {
                 TopAppBar(
                     title = { Text(stringResource(R.string.home_title)) }
@@ -71,7 +81,8 @@ fun DownloaderScreen(
                 Column(
                     modifier = Modifier.padding(16.dp)
                 ) {
-                    val (url, setUrl) = remember { mutableStateOf("") }
+                    val testUrl = "https://twitter.com/bak840/status/1362860958092316675"
+                    val (url, setUrl) = remember { mutableStateOf(testUrl) }
 
                     OutlinedTextField(
                         value = url,
@@ -100,8 +111,20 @@ fun DownloaderScreen(
                         Spacer(modifier = Modifier.weight(1f))
                         Button(
                             onClick = {
-                                getVariants(url)
-                                scope.launch { state.show() }
+                                keyboardController?.hideSoftwareKeyboard()
+
+                                if (isTweetUrlValid(url)) {
+                                    scope.launch {
+                                        getVariants(url)
+                                        sheetState.show()
+                                    }
+                                } else {
+                                    scope.launch {
+                                        scaffoldState.snackbarHostState.showSnackbar(
+                                            invalidUrlText
+                                        )
+                                    }
+                                }
                             }
                         ) {
                             Text(text = stringResource(R.string.button_download_text))
@@ -135,6 +158,7 @@ fun LoadingScreen(
     content()
 }
 
+@ExperimentalComposeUiApi
 @ExperimentalMaterialApi
 @Preview(showBackground = true)
 @Composable
