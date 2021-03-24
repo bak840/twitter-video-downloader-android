@@ -15,6 +15,14 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        def secretsProperties = new Properties()
+        if (rootProject.file("secrets.properties").exists()) {
+            rootProject.file("secrets.properties")?.withInputStream {
+                secretsProperties.load(it)
+            }
+        }
+        buildConfigField("String", "TWITTER_API_BEARER_TOKEN", (secretsProperties["BEARER_TOKEN"] ?: ""))
     }
 
     buildTypes {
