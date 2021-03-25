@@ -130,7 +130,6 @@ fun DownloaderScreen(
                             Text(text = stringResource(R.string.button_download_text))
                         }
                     }
-                    // Button(onClick = { setIsLoading(true) }) { Text(text = "Start") }
                 }
             }
         }
