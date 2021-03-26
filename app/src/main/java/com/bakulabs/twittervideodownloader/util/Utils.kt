@@ -2,16 +2,15 @@ package com.bakulabs.twittervideodownloader.util
 
 import com.bakulabs.twittervideodownloader.BuildConfig
 
-
-const val TWEET_URL_PATTERN = "^https://twitter\\.com/\\w+/status/(\\d+).*\$"
-
 fun isTweetUrlValid(url: String): Boolean {
-    val regex = Regex(pattern = TWEET_URL_PATTERN, options = setOf(RegexOption.IGNORE_CASE))
+    val pattern = "^https://twitter\\.com/\\w+/status/\\d+.*\$"
+    val regex = Regex(pattern = pattern, options = setOf(RegexOption.IGNORE_CASE))
     return regex.matches(url)
 }
 
 fun getTweetIdFromUrl(url: String): String? {
-    val regex = Regex(pattern = TWEET_URL_PATTERN, options = setOf(RegexOption.IGNORE_CASE))
+    val pattern = "^https://twitter\\.com/\\w+/status/(\\d+).*\$"
+    val regex = Regex(pattern = pattern, options = setOf(RegexOption.IGNORE_CASE))
     return regex.find(url)?.groups?.get(1)?.value
 }
 
