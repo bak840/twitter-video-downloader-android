@@ -1,4 +1,4 @@
-package com.bakulabs.twittervideodownloader.downloader
+package com.bakulabs.twittervideodownloader.ui.home
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -12,7 +12,7 @@ import com.bakulabs.twittervideodownloader.util.getTweetIdFromUrl
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class DownloaderViewModel : ViewModel() {
+class HomeViewModel : ViewModel() {
     var variants: List<Variant> by mutableStateOf(listOf())
         private set
 

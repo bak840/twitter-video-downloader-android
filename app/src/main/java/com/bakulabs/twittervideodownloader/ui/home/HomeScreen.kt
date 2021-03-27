@@ -1,4 +1,4 @@
-package com.bakulabs.twittervideodownloader.downloader
+package com.bakulabs.twittervideodownloader.ui.home
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -27,7 +27,7 @@ import kotlinx.coroutines.launch
 @ExperimentalComposeUiApi
 @ExperimentalMaterialApi
 @Composable
-fun DownloaderScreen(
+fun HomeScreen(
     variants: List<Variant>,
     getVariants: (String) -> Unit,
     downloadVariant: (String) -> Unit,
@@ -163,6 +163,6 @@ fun LoadingScreen(
 @Composable
 fun DefaultPreview() {
     DownloaderTheme {
-        DownloaderScreen(listOf(Variant("", "1920x1080", "36 kB")), {}, {}, { "" })
+        HomeScreen(listOf(Variant("", "1920x1080", "36 kB")), {}, {}, { "" })
     }
 }

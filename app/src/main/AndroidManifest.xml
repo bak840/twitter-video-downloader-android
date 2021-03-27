@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TwitterVideoDownloader">
         <activity
-            android:name=".downloader.DownloaderActivity"
+            android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.TwitterVideoDownloader.NoActionBar">
