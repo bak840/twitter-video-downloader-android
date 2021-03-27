@@ -18,8 +18,8 @@ fun getTwitterApiBearerToken(): String {
     return BuildConfig.TWITTER_API_BEARER_TOKEN
 }
 
-fun getVariantDefinitionFromUrl(variantUrl: String): String {
+fun getVariantDefinitionFromUrl(variantUrl: String): String? {
     val pattern = "^.*/(\\d+x\\d+).*\$"
     val regex = Regex(pattern = pattern, options = setOf(RegexOption.IGNORE_CASE))
-    return regex.find(variantUrl)?.groups?.get(1)?.value!!
+    return regex.find(variantUrl)?.groups?.get(1)?.value
 }

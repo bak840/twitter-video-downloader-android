@@ -35,7 +35,7 @@ data class Variant(
 fun Variant.asDomainModel(): com.bakulabs.twittervideodownloader.domain.Variant {
     return com.bakulabs.twittervideodownloader.domain.Variant(
         url = url,
-        definition = getVariantDefinitionFromUrl(url),
+        definition = getVariantDefinitionFromUrl(url) ?: "",
         size = ""
     )
 }
