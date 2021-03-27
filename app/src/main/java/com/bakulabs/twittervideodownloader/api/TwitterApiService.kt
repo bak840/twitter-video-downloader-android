@@ -1,4 +1,4 @@
-package com.bakulabs.twittervideodownloader.network
+package com.bakulabs.twittervideodownloader.api
 
 import com.bakulabs.twittervideodownloader.util.getTwitterApiBearerToken
 import com.squareup.moshi.Moshi
@@ -14,7 +14,7 @@ const val BASE_URL = "https://api.twitter.com"
 
 interface TwitterApiService {
     @GET("/1.1/statuses/show/{id}.json?tweet_mode=extended")
-    suspend fun getStatus(@Path("id") id: String): Status
+    suspend fun getTweet(@Path("id") id: String): Tweet
 }
 
 private val moshi = Moshi.Builder()
