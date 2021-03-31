@@ -14,6 +14,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import com.bakulabs.twittervideodownloader.ui.home.HomeScreen
 import com.bakulabs.twittervideodownloader.ui.home.HomeViewModel
 import com.bakulabs.twittervideodownloader.ui.theme.DownloaderTheme
+import kotlinx.coroutines.InternalCoroutinesApi
 import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
@@ -29,6 +30,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    @InternalCoroutinesApi
     @ExperimentalComposeUiApi
     @ExperimentalMaterialApi
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,9 +41,7 @@ class MainActivity : AppCompatActivity() {
                 // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
                     HomeScreen(
-                        variants = viewModel.variants,
-                        getVariants = {viewModel.getVariants(it)},
-                        downloadVariant = {viewModel.downloadVariant(it)},
+                        viewModel = viewModel,
                         getClipboardText = {getClipboardText()}
                     )
                 }
