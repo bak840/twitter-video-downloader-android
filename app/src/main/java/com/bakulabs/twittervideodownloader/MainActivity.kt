@@ -56,7 +56,7 @@ class MainActivity : AppCompatActivity() {
         val viewModelFactory = HomeViewModelFactory(videoRepository)
         val viewModel = ViewModelProvider(this, viewModelFactory).get(HomeViewModel::class.java)
 
-        var initUrl = "https://twitter.com/bak840/status/1362860958092316675"
+        var initUrl = ""
         if (intent?.action == Intent.ACTION_SEND) {
             initUrl = intent.getStringExtra(Intent.EXTRA_TEXT).toString()
         }
