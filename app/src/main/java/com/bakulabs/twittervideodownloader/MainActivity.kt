@@ -5,22 +5,22 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.os.Bundle
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.lifecycle.ViewModelProvider
+import com.bakulabs.twittervideodownloader.api.VideoRepository
 import com.bakulabs.twittervideodownloader.ui.home.HomeScreen
 import com.bakulabs.twittervideodownloader.ui.home.HomeViewModel
+import com.bakulabs.twittervideodownloader.ui.home.HomeViewModelFactory
 import com.bakulabs.twittervideodownloader.ui.theme.DownloaderTheme
 import kotlinx.coroutines.InternalCoroutinesApi
 import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
-    private val viewModel by viewModels<HomeViewModel>()
-
     private fun getClipboardText(): String {
         val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
 
@@ -40,6 +40,12 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Timber.plant(Timber.DebugTree())
+
+        val videoRepository = VideoRepository(applicationContext)
+
+        val viewModelFactory = HomeViewModelFactory(videoRepository)
+        val viewModel = ViewModelProvider(this, viewModelFactory).get(HomeViewModel::class.java)
+
         setContent {
             DownloaderTheme {
                 Surface(color = MaterialTheme.colors.background) {

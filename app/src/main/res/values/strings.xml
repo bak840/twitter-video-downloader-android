@@ -11,4 +11,6 @@
     <string name="loading_text">Loading</string>
     <string name="tweet_url_invalid">Tweet link invalid</string>
     <string name="no_video_in_tweet">No video in tweet</string>
+    <string name="download_successful">File downloaded</string>
+    <string name="download_failed">Error</string>
 </resources>

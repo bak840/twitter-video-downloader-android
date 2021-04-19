@@ -6,17 +6,17 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bakulabs.twittervideodownloader.R
-import com.bakulabs.twittervideodownloader.api.Result
-import com.bakulabs.twittervideodownloader.api.TweetRepository
-import com.bakulabs.twittervideodownloader.api.getVariants
+import com.bakulabs.twittervideodownloader.api.*
 import com.bakulabs.twittervideodownloader.domain.Variant
 import com.bakulabs.twittervideodownloader.util.getTweetIdFromUrl
+import com.bakulabs.twittervideodownloader.util.getTweetIdFromVariantUrl
 import com.bakulabs.twittervideodownloader.util.isTweetUrlValid
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class HomeViewModel : ViewModel() {
+class HomeViewModel(private val videoRepository: VideoRepository) : ViewModel() {
     private val tweetRepository = TweetRepository()
 
     var isLoading: Boolean by mutableStateOf(false)
@@ -72,6 +72,7 @@ class HomeViewModel : ViewModel() {
                             if (variants.isNotEmpty()) {
                                 Timber.d("Show sheet")
                                 showSheet = true
+                                hideSheet = false
                             } else {
                                 Timber.i("No video in tweet")
                                 showSnackBarMessage(R.string.no_video_in_tweet)
@@ -90,6 +91,28 @@ class HomeViewModel : ViewModel() {
     }
 
     fun downloadVariant(variant: Variant) {
-        // TODO: download variant
+        viewModelScope.launch {
+            isLoading = true
+
+            val tweetId = getTweetIdFromVariantUrl(variant.url)!!
+            val fileName = "${tweetId}_${variant.definition}"
+
+            videoRepository.download(variant.url, fileName).collect { result ->
+                isLoading = false
+                delay(50)
+                hideSheet = true
+                showSheet = false
+                delay(50)
+                when (result) {
+                    is DownloadResult.Error -> {
+                        Timber.e(result.message)
+                        showSnackBarMessage(R.string.download_failed)
+                    }
+                    DownloadResult.Success -> {
+                        showSnackBarMessage(R.string.download_successful)
+                    }
+                }
+            }
+        }
     }
 }
