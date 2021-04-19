@@ -10,62 +10,66 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.flowWithLifecycle
 import com.bakulabs.twittervideodownloader.R
+import com.bakulabs.twittervideodownloader.domain.Variant
 import com.bakulabs.twittervideodownloader.ui.theme.DownloaderTheme
-import com.bakulabs.twittervideodownloader.util.isTweetUrlValid
-import com.bakulabs.twittervideodownloader.util.observeInLifecycle
 import kotlinx.coroutines.InternalCoroutinesApi
-import kotlinx.coroutines.currentCoroutineContext
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
-import timber.log.Timber
 
-@InternalCoroutinesApi
 @ExperimentalComposeUiApi
 @ExperimentalMaterialApi
 @Composable
 fun HomeScreen(
-    viewModel: HomeViewModel,
+    isLoading: Boolean,
+    showSnackBar: Boolean,
+    snackBarMessageId: Int,
+    onDismissSnackBar: () -> Unit,
+    showSheet: Boolean,
+    hideSheet: Boolean,
+    onDismissSheet: () -> Unit,
+    variants: List<Variant>,
+    getVariants: (id: String) -> Unit,
+    downloadVariant: (variant: Variant) -> Unit,
     getClipboardText: () -> String,
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
 
     val scaffoldState = rememberScaffoldState()
     val sheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
-    val scope = rememberCoroutineScope()
 
-    val lifecycleOwner = LocalLifecycleOwner.current
-    val eventsFlowLifecycleAware = remember(viewModel.eventsFlow, lifecycleOwner) {
-        viewModel.eventsFlow.flowWithLifecycle(lifecycleOwner.lifecycle, Lifecycle.State.STARTED)
-    }
+    val onDismissSnackBarState by rememberUpdatedState(newValue = onDismissSnackBar)
+    val onDismissSheetState by rememberUpdatedState(newValue = onDismissSheet)
 
-    val context = LocalContext.current
-
-    eventsFlowLifecycleAware.onEach {
-        when (it) {
-            HomeViewModel.Event.ShowSheet -> {
-                Timber.d("Show sheet event received")
-                scope.launch {
-                    sheetState.show()
-                }
-            }
-            is HomeViewModel.Event.ShowSnackBar -> {
-                scope.launch {
-                    scaffoldState.snackbarHostState.showSnackbar(
-                        context.getString(it.resId)
-                    )
-                }
+    if (showSnackBar) {
+        val snackBarMessage = stringResource(id = snackBarMessageId)
+        LaunchedEffect(showSnackBar) {
+            try {
+                scaffoldState.snackbarHostState.showSnackbar(snackBarMessage)
+            } finally {
+                onDismissSnackBarState()
             }
         }
-    }.observeInLifecycle(lifecycleOwner)
+    }
+
+    if (showSheet) {
+        LaunchedEffect(variants, showSheet) {
+            try {
+                sheetState.show()
+
+            } finally {
+                onDismissSheetState()
+            }
+        }
+    }
+
+    if (hideSheet) {
+        LaunchedEffect(hideSheet) {
+            sheetState.hide()
+        }
+    }
 
     ModalBottomSheetLayout(
         sheetState = sheetState,
@@ -73,7 +77,7 @@ fun HomeScreen(
             Column(Modifier.padding(8.dp)) {
                 Text(text = stringResource(R.string.videos_sheet_title))
                 Spacer(modifier = Modifier.height(16.dp))
-                for (variant in viewModel.variants) {
+                variants.forEach { variant ->
                     Row(
                         modifier = Modifier.padding(vertical = 8.dp),
                         verticalAlignment = Alignment.CenterVertically
@@ -82,7 +86,7 @@ fun HomeScreen(
                         Spacer(modifier = Modifier.weight(1f))
                         Text(text = variant.size)
                         Spacer(modifier = Modifier.width(8.dp))
-                        IconButton(onClick = { viewModel.downloadVariant(variant.url) }) {
+                        IconButton(onClick = { downloadVariant(variant) }) {
                             Icon(
                                 imageVector = Icons.Default.FileDownload,
                                 contentDescription = null
@@ -101,7 +105,7 @@ fun HomeScreen(
                 )
             }
         ) {
-            LoadingScreen(isLoading = viewModel.isLoading) {
+            LoadingScreen(isLoading = isLoading) {
                 Column(
                     modifier = Modifier.padding(16.dp)
                 ) {
@@ -135,8 +139,8 @@ fun HomeScreen(
                         Spacer(modifier = Modifier.weight(1f))
                         Button(
                             onClick = {
-                                keyboardController?.hideSoftwareKeyboard()
-                                viewModel.getVariants(url)
+                                keyboardController?.hide()
+                                getVariants(url)
                             }
                         ) {
                             Text(text = stringResource(R.string.button_download_text))
@@ -172,8 +176,18 @@ fun LoadingScreen(
 @ExperimentalMaterialApi
 @Preview(showBackground = true)
 @Composable
-fun DefaultPreview() {
-    DownloaderTheme {
-        HomeScreen(HomeViewModel()) { "" }
+fun DefaultPreview() = DownloaderTheme {
+    HomeScreen(
+        isLoading = false,
+        showSnackBar = false,
+        snackBarMessageId = 0,
+        onDismissSnackBar = {},
+        showSheet = false,
+        hideSheet = false,
+        onDismissSheet = {},
+        variants = listOf(),
+        getVariants = {},
+        downloadVariant = {}) {
+        ""
     }
 }

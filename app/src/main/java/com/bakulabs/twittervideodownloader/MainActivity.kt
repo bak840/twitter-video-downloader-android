@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import com.bakulabs.twittervideodownloader.ui.home.HomeScreen
 import com.bakulabs.twittervideodownloader.ui.home.HomeViewModel
@@ -23,7 +24,10 @@ class MainActivity : AppCompatActivity() {
     private fun getClipboardText(): String {
         val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
 
-        return if(clipboard.hasPrimaryClip() && clipboard.primaryClipDescription?.hasMimeType(MIMETYPE_TEXT_PLAIN) == true) {
+        return if (clipboard.hasPrimaryClip() && clipboard.primaryClipDescription?.hasMimeType(
+                MIMETYPE_TEXT_PLAIN
+            ) == true
+        ) {
             clipboard.primaryClip!!.getItemAt(0).text.toString()
         } else {
             ""
@@ -38,14 +42,32 @@ class MainActivity : AppCompatActivity() {
         Timber.plant(Timber.DebugTree())
         setContent {
             DownloaderTheme {
-                // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
-                    HomeScreen(
+                    HomeActivityScreen(
                         viewModel = viewModel,
-                        getClipboardText = {getClipboardText()}
+                        getClipboardText = { getClipboardText() }
                     )
                 }
             }
         }
     }
+}
+
+@ExperimentalMaterialApi
+@ExperimentalComposeUiApi
+@Composable
+private fun HomeActivityScreen(viewModel: HomeViewModel, getClipboardText: () -> String) {
+    HomeScreen(
+        isLoading = viewModel.isLoading,
+        showSnackBar = viewModel.showSnackBar,
+        snackBarMessageId = viewModel.snackBarMessageId,
+        onDismissSnackBar = viewModel::dismissSnackBar,
+        showSheet = viewModel.showSheet,
+        hideSheet = viewModel.hideSheet,
+        onDismissSheet = viewModel::dismissSheet,
+        variants = viewModel.variants,
+        getVariants = viewModel::getVariants,
+        downloadVariant = viewModel::downloadVariant,
+        getClipboardText = getClipboardText
+    )
 }
