@@ -1,14 +1,15 @@
 package com.bakulabs.twittervideodownloader.api
 
 import com.bakulabs.twittervideodownloader.util.getTwitterApiBearerToken
+import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Path
+import se.ansman.kotshi.KotshiJsonAdapterFactory
 
 const val BASE_URL = "https://api.twitter.com"
 
@@ -17,8 +18,11 @@ interface TwitterApiService {
     suspend fun getTweet(@Path("id") id: String): Tweet
 }
 
+@KotshiJsonAdapterFactory
+object ApplicationJsonAdapterFactory : JsonAdapter.Factory by KotshiApplicationJsonAdapterFactory
+
 private val moshi = Moshi.Builder()
-    .add(KotlinJsonAdapterFactory())
+    .add(ApplicationJsonAdapterFactory)
     .build()
 
 private var client = OkHttpClient.Builder().addInterceptor { chain ->

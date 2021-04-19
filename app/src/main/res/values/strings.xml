@@ -10,4 +10,9 @@
     <string name="videos_sheet_title">Videos</string>
     <string name="loading_text">Loading</string>
     <string name="tweet_url_invalid">Tweet link invalid</string>
+    <string name="no_video_in_tweet">No video in tweet</string>
+    <string name="download_successful">File downloaded</string>
+    <string name="download_failed">Error</string>
+    <string name="open_action">Open</string>
+    <string name="open_file_intent">Open File</string>
 </resources>

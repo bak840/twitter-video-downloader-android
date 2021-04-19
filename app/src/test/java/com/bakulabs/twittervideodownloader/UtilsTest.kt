@@ -1,6 +1,7 @@
 package com.bakulabs.twittervideodownloader
 
 import com.bakulabs.twittervideodownloader.util.getTweetIdFromUrl
+import com.bakulabs.twittervideodownloader.util.getTweetIdFromVariantUrl
 import com.bakulabs.twittervideodownloader.util.getVariantDefinitionFromUrl
 import com.bakulabs.twittervideodownloader.util.isTweetUrlValid
 import org.junit.Test
@@ -61,5 +62,15 @@ class UtilsTest {
         val definition = getVariantDefinitionFromUrl(url)
 
         assertEquals("1280x720", definition)
+    }
+
+    @Test
+    fun getTweetIdFromVariantUrl_isWorking() {
+        val url =
+            "https://video.twimg.com/ext_tw_video/1362860550460473345/pu/vid/1280x720/x0dMoNnpfSmZGqF8.mp4?tag=10"
+
+        val id = getTweetIdFromVariantUrl(url)
+
+        assertEquals("1362860550460473345", id)
     }
 }

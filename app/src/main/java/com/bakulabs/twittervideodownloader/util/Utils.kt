@@ -23,3 +23,9 @@ fun getVariantDefinitionFromUrl(variantUrl: String): String? {
     val regex = Regex(pattern = pattern, options = setOf(RegexOption.IGNORE_CASE))
     return regex.find(variantUrl)?.groups?.get(1)?.value
 }
+
+fun getTweetIdFromVariantUrl(variantUrl: String): String? {
+    val pattern = "^.*ext_tw_video/(\\d+).*\$"
+    val regex = Regex(pattern = pattern, options = setOf(RegexOption.IGNORE_CASE))
+    return regex.find(variantUrl)?.groups?.get(1)?.value
+}
