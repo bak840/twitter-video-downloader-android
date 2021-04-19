@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
+import androidx.annotation.RequiresApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -38,6 +39,7 @@ class VideoRepository(private val context: Context) {
         else downloadLegacy(url, name)
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     private suspend fun downloadQ(url: String, name: String): Flow<DownloadResult> {
         return flow {
             try {

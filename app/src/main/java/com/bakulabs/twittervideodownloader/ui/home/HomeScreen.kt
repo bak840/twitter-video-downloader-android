@@ -1,6 +1,7 @@
 package com.bakulabs.twittervideodownloader.ui.home
 
 import android.net.Uri
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -25,6 +26,7 @@ import timber.log.Timber
 @ExperimentalMaterialApi
 @Composable
 fun HomeScreen(
+    initUrl: String,
     isLoading: Boolean,
     isSheetShowing: Boolean,
     isSheetHiding: Boolean,
@@ -132,10 +134,14 @@ fun HomeScreen(
         ) {
             LoadingScreen(isLoading = isLoading) {
                 Column(
-                    modifier = Modifier.padding(16.dp)
+                    modifier = Modifier.padding(
+                        top = 32.dp,
+                        start = 16.dp,
+                        bottom = 16.dp,
+                        end = 16.dp
+                    )
                 ) {
-                    val testUrl = "https://twitter.com/bak840/status/1362860958092316675"
-                    val (url, setUrl) = remember { mutableStateOf(testUrl) }
+                    val (url, setUrl) = remember { mutableStateOf(initUrl) }
 
                     OutlinedTextField(
                         value = url,
@@ -148,12 +154,12 @@ fun HomeScreen(
                                 Icon(
                                     Icons.Default.Clear,
                                     contentDescription = stringResource(R.string.url_field_clear),
-                                    tint = Color.Black
+                                    tint = if (isSystemInDarkTheme()) Color.White else Color.Black
                                 )
                             }
                         }
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
                     Row(
                         modifier = Modifier,
                         verticalAlignment = Alignment.CenterVertically,
@@ -203,6 +209,7 @@ fun LoadingScreen(
 @Composable
 fun DefaultPreview() = DownloaderTheme {
     HomeScreen(
+        initUrl = "",
         isLoading = false,
         isSheetShowing = false,
         isSheetHiding = false,

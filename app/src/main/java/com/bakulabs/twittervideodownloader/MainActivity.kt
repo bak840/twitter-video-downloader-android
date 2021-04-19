@@ -57,10 +57,16 @@ class MainActivity : AppCompatActivity() {
         val viewModelFactory = HomeViewModelFactory(videoRepository)
         val viewModel = ViewModelProvider(this, viewModelFactory).get(HomeViewModel::class.java)
 
+        var initUrl = "https://twitter.com/bak840/status/1362860958092316675"
+        if (intent?.action == Intent.ACTION_SEND) {
+            initUrl = intent.getStringExtra(Intent.EXTRA_TEXT).toString()
+        }
+
         setContent {
             DownloaderTheme {
                 Surface(color = MaterialTheme.colors.background) {
                     HomeActivityScreen(
+                        initUrl = initUrl,
                         viewModel = viewModel,
                         getClipboardText = this::getClipboardText,
                         openVariant = this::openVariant
@@ -75,11 +81,13 @@ class MainActivity : AppCompatActivity() {
 @ExperimentalComposeUiApi
 @Composable
 private fun HomeActivityScreen(
+    initUrl: String,
     viewModel: HomeViewModel,
     getClipboardText: () -> String,
     openVariant: (uri: Uri) -> Unit
 ) {
     HomeScreen(
+        initUrl = initUrl,
         isLoading = viewModel.isLoading,
         isSheetShowing = viewModel.isSheetShowing,
         isSheetHiding = viewModel.isSheetHiding,
