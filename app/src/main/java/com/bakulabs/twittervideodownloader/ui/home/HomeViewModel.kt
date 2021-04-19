@@ -1,5 +1,6 @@
 package com.bakulabs.twittervideodownloader.ui.home
 
+import android.net.Uri
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -19,35 +20,50 @@ import timber.log.Timber
 class HomeViewModel(private val videoRepository: VideoRepository) : ViewModel() {
     private val tweetRepository = TweetRepository()
 
-    var isLoading: Boolean by mutableStateOf(false)
-        private set
-
-    var showSnackBar: Boolean by mutableStateOf(false)
-        private set
-
-    var snackBarMessageId: Int by mutableStateOf(0)
-        private set
-
-    var showSheet: Boolean by mutableStateOf(false)
-        private set
-
-    var hideSheet: Boolean by mutableStateOf(false)
-        private set
-
     var variants: List<Variant> by mutableStateOf(listOf())
         private set
 
-    private fun showSnackBarMessage(messageId: Int) {
-        snackBarMessageId = messageId
-        showSnackBar = true
-    }
+    var isLoading: Boolean by mutableStateOf(false)
+        private set
 
-    fun dismissSnackBar() {
-        showSnackBar = false
-    }
+    var isSheetShowing: Boolean by mutableStateOf(false)
+        private set
+
+    var isSheetHiding: Boolean by mutableStateOf(false)
+        private set
 
     fun dismissSheet() {
-        showSheet = false
+        isSheetShowing = false
+    }
+
+    var isVariantSnackBarShowing: Boolean by mutableStateOf(false)
+        private set
+
+    var variantUri: Uri by mutableStateOf(Uri.Builder().build())
+        private set
+
+    private fun showVariantSnackBar(uri: Uri) {
+        variantUri = uri
+        isVariantSnackBarShowing = true
+    }
+
+    fun dismissVariantSnackBar() {
+        isVariantSnackBarShowing = false
+    }
+
+    var isErrorSnackBarShowing: Boolean by mutableStateOf(false)
+        private set
+
+    var errorResId: Int by mutableStateOf(0)
+        private set
+
+    private fun showErrorSnackBar(messageId: Int) {
+        errorResId = messageId
+        isErrorSnackBarShowing = true
+    }
+
+    fun dismissErrorSnackBar() {
+        isErrorSnackBarShowing = false
     }
 
     fun getVariants(url: String) {
@@ -71,22 +87,22 @@ class HomeViewModel(private val videoRepository: VideoRepository) : ViewModel() 
                             isLoading = false
                             if (variants.isNotEmpty()) {
                                 Timber.d("Show sheet")
-                                showSheet = true
-                                hideSheet = false
+                                isSheetShowing = true
+                                isSheetHiding = false
                             } else {
                                 Timber.i("No video in tweet")
-                                showSnackBarMessage(R.string.no_video_in_tweet)
+                                showErrorSnackBar(R.string.no_video_in_tweet)
                             }
                         }
                     }
                 }
             } else {
                 Timber.i("Failed to get tweet id")
-                showSnackBarMessage(R.string.tweet_url_invalid)
+                showErrorSnackBar(R.string.tweet_url_invalid)
             }
         } else {
             Timber.i("Tweet URL invalid")
-            showSnackBarMessage(R.string.tweet_url_invalid)
+            showErrorSnackBar(R.string.tweet_url_invalid)
         }
     }
 
@@ -100,16 +116,16 @@ class HomeViewModel(private val videoRepository: VideoRepository) : ViewModel() 
             videoRepository.download(variant.url, fileName).collect { result ->
                 isLoading = false
                 delay(50)
-                hideSheet = true
-                showSheet = false
+                isSheetHiding = true
+                isSheetShowing = false
                 delay(50)
                 when (result) {
                     is DownloadResult.Error -> {
                         Timber.e(result.message)
-                        showSnackBarMessage(R.string.download_failed)
+                        showErrorSnackBar(R.string.download_failed)
                     }
-                    DownloadResult.Success -> {
-                        showSnackBarMessage(R.string.download_successful)
+                    is DownloadResult.Success -> {
+                        showVariantSnackBar(result.uri)
                     }
                 }
             }

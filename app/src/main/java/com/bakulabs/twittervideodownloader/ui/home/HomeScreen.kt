@@ -1,5 +1,6 @@
 package com.bakulabs.twittervideodownloader.ui.home
 
+import android.net.Uri
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -18,18 +19,23 @@ import com.bakulabs.twittervideodownloader.R
 import com.bakulabs.twittervideodownloader.domain.Variant
 import com.bakulabs.twittervideodownloader.ui.theme.DownloaderTheme
 import kotlinx.coroutines.InternalCoroutinesApi
+import timber.log.Timber
 
 @ExperimentalComposeUiApi
 @ExperimentalMaterialApi
 @Composable
 fun HomeScreen(
     isLoading: Boolean,
-    showSnackBar: Boolean,
-    snackBarMessageId: Int,
-    onDismissSnackBar: () -> Unit,
-    showSheet: Boolean,
-    hideSheet: Boolean,
+    isSheetShowing: Boolean,
+    isSheetHiding: Boolean,
     onDismissSheet: () -> Unit,
+    isVariantSnackBarShowing: Boolean,
+    variantUri: Uri,
+    openVariant: (uri: Uri) -> Unit,
+    onDismissVariantSnackBar: () -> Unit,
+    isErrorSnackBarShowing: Boolean,
+    errorResId: Int,
+    onDismissErrorSnackBar: () -> Unit,
     variants: List<Variant>,
     getVariants: (id: String) -> Unit,
     downloadVariant: (variant: Variant) -> Unit,
@@ -40,22 +46,12 @@ fun HomeScreen(
     val scaffoldState = rememberScaffoldState()
     val sheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
 
-    val onDismissSnackBarState by rememberUpdatedState(newValue = onDismissSnackBar)
     val onDismissSheetState by rememberUpdatedState(newValue = onDismissSheet)
+    val onDismissVariantSnackBarState by rememberUpdatedState(newValue = onDismissVariantSnackBar)
+    val onDismissErrorSnackBarState by rememberUpdatedState(newValue = onDismissErrorSnackBar)
 
-    if (showSnackBar) {
-        val snackBarMessage = stringResource(id = snackBarMessageId)
-        LaunchedEffect(showSnackBar) {
-            try {
-                scaffoldState.snackbarHostState.showSnackbar(snackBarMessage)
-            } finally {
-                onDismissSnackBarState()
-            }
-        }
-    }
-
-    if (showSheet) {
-        LaunchedEffect(variants, showSheet) {
+    if (isSheetShowing) {
+        LaunchedEffect(variants, isSheetShowing) {
             try {
                 sheetState.show()
 
@@ -65,9 +61,38 @@ fun HomeScreen(
         }
     }
 
-    if (hideSheet) {
-        LaunchedEffect(hideSheet) {
+    if (isSheetHiding) {
+        LaunchedEffect(isSheetHiding) {
             sheetState.hide()
+        }
+    }
+
+    if (isVariantSnackBarShowing) {
+        val snackBarMessage = stringResource(R.string.download_successful)
+        val openActionText = stringResource(R.string.open_action)
+        LaunchedEffect(isVariantSnackBarShowing) {
+            try {
+                when (scaffoldState.snackbarHostState.showSnackbar(
+                    snackBarMessage,
+                    openActionText
+                )) {
+                    SnackbarResult.Dismissed -> Timber.d("SnackBar dismissed")
+                    SnackbarResult.ActionPerformed -> openVariant(variantUri)
+                }
+            } finally {
+                onDismissVariantSnackBarState()
+            }
+        }
+    }
+
+    if (isErrorSnackBarShowing) {
+        val snackBarMessage = stringResource(id = errorResId)
+        LaunchedEffect(isErrorSnackBarShowing) {
+            try {
+                scaffoldState.snackbarHostState.showSnackbar(snackBarMessage)
+            } finally {
+                onDismissErrorSnackBarState()
+            }
         }
     }
 
@@ -179,12 +204,16 @@ fun LoadingScreen(
 fun DefaultPreview() = DownloaderTheme {
     HomeScreen(
         isLoading = false,
-        showSnackBar = false,
-        snackBarMessageId = 0,
-        onDismissSnackBar = {},
-        showSheet = false,
-        hideSheet = false,
+        isSheetShowing = false,
+        isSheetHiding = false,
         onDismissSheet = {},
+        isVariantSnackBarShowing = false,
+        variantUri = Uri.Builder().build(),
+        openVariant = {},
+        onDismissVariantSnackBar = {},
+        isErrorSnackBarShowing = false,
+        errorResId = 0,
+        onDismissErrorSnackBar = {},
         variants = listOf(),
         getVariants = {},
         downloadVariant = {}) {

@@ -2,6 +2,8 @@ package com.bakulabs.twittervideodownloader.api
 
 import android.content.ContentValues
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
@@ -17,7 +19,7 @@ import timber.log.Timber
 import java.io.File
 
 sealed class DownloadResult {
-    object Success : DownloadResult()
+    data class Success(val uri: Uri) : DownloadResult()
     data class Error(val message: String) : DownloadResult()
 }
 
@@ -64,7 +66,7 @@ class VideoRepository(private val context: Context) {
                         values.clear()
                         values.put(MediaStore.Video.Media.IS_PENDING, 0)
                         resolver.update(uri, values, null, null)
-                        emit(DownloadResult.Success)
+                        emit(DownloadResult.Success(it))
                     } ?: throw RuntimeException("MediaStore failed for some reason")
                 } else {
                     emit(DownloadResult.Error("Error"))
@@ -100,7 +102,7 @@ class VideoRepository(private val context: Context) {
 
                     response.body?.source()?.let { sink.writeAll(it) }
                     sink.close()
-                    emit(DownloadResult.Success)
+                    emit(DownloadResult.Success(Uri.fromFile(file)))
                 } else {
                     throw RuntimeException("OkHttp failed for some reason")
                 }

@@ -3,6 +3,8 @@ package com.bakulabs.twittervideodownloader
 import android.content.ClipDescription.MIMETYPE_TEXT_PLAIN
 import android.content.ClipboardManager
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
@@ -34,6 +36,15 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun openVariant(uri: Uri) {
+        val target = Intent(Intent.ACTION_VIEW)
+        target.setDataAndType(uri, "video/mp4")
+        target.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+
+        val intent = Intent.createChooser(target, getString(R.string.open_file_intent))
+        startActivity(intent)
+    }
+
     @InternalCoroutinesApi
     @ExperimentalComposeUiApi
     @ExperimentalMaterialApi
@@ -51,7 +62,8 @@ class MainActivity : AppCompatActivity() {
                 Surface(color = MaterialTheme.colors.background) {
                     HomeActivityScreen(
                         viewModel = viewModel,
-                        getClipboardText = { getClipboardText() }
+                        getClipboardText = this::getClipboardText,
+                        openVariant = this::openVariant
                     )
                 }
             }
@@ -62,15 +74,23 @@ class MainActivity : AppCompatActivity() {
 @ExperimentalMaterialApi
 @ExperimentalComposeUiApi
 @Composable
-private fun HomeActivityScreen(viewModel: HomeViewModel, getClipboardText: () -> String) {
+private fun HomeActivityScreen(
+    viewModel: HomeViewModel,
+    getClipboardText: () -> String,
+    openVariant: (uri: Uri) -> Unit
+) {
     HomeScreen(
         isLoading = viewModel.isLoading,
-        showSnackBar = viewModel.showSnackBar,
-        snackBarMessageId = viewModel.snackBarMessageId,
-        onDismissSnackBar = viewModel::dismissSnackBar,
-        showSheet = viewModel.showSheet,
-        hideSheet = viewModel.hideSheet,
+        isSheetShowing = viewModel.isSheetShowing,
+        isSheetHiding = viewModel.isSheetHiding,
         onDismissSheet = viewModel::dismissSheet,
+        isVariantSnackBarShowing = viewModel.isVariantSnackBarShowing,
+        variantUri = viewModel.variantUri,
+        openVariant = openVariant,
+        onDismissVariantSnackBar = viewModel::dismissVariantSnackBar,
+        isErrorSnackBarShowing = viewModel.isErrorSnackBarShowing,
+        errorResId = viewModel.errorResId,
+        onDismissErrorSnackBar = viewModel::dismissErrorSnackBar,
         variants = viewModel.variants,
         getVariants = viewModel::getVariants,
         downloadVariant = viewModel::downloadVariant,
