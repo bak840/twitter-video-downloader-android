@@ -38,29 +38,26 @@ class HomeViewModel : ViewModel() {
             if (id != null) {
                 viewModelScope.launch {
                     isLoading = true
-                    try {
-                        val status = TwitterApi.service.getTweet(id)
-                        Timber.d("Successfully retrieved Tweet ${status.id}")
-                        variants =
-                            status.extendedEntities?.media?.get(0)?.videoInfo?.variants?.filter { it.contentType == "video/mp4" }
-                                ?.map { it.asDomainModel() }
-                                ?: listOf()
+                    when (val tweet = tweetRepository.getTweet(id)) {
+                        is Result.Error -> {
                         isLoading = false
-                        if (variants.isNotEmpty()) {
-                            Timber.d("Send show sheet event")
-                            eventChannel.send(Event.ShowSheet)
+                            tweet.exception.message?.let {
+                                Timber.e(it)
                         }
-                    } catch (e: Exception) {
-                        e.message?.let {
-                            Timber.d(it)
                         }
+                        is Result.Success -> {
+                            Timber.d("Successfully fetched Tweet ${tweet.data.id}")
+                            variants = tweet.data.getVariants()
+                            delay(100)
                         isLoading = false
+                            if (variants.isNotEmpty()) {
+                                Timber.d("Show sheet")
+                                showSheet = true
+                            } else {
+                                Timber.i("No video in tweet")
+                                showSnackBarMessage(R.string.no_video_in_tweet)
                     }
                 }
-            } else {
-                Timber.d("Failed to get tweet id")
-                viewModelScope.launch {
-                    eventChannel.send(Event.ShowSnackBar(R.string.tweet_url_invalid))
                 }
             }
         }
