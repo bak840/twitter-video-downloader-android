@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
+    id "org.jetbrains.kotlin.kapt"
 }
 
 android {
@@ -63,6 +64,8 @@ dependencies {
     implementation 'com.jakewharton.timber:timber:4.7.1'
     implementation "com.squareup.retrofit2:converter-moshi:$version_retrofit"
     implementation "com.squareup.moshi:moshi-kotlin:$version_moshi"
+    implementation "se.ansman.kotshi:api:2.4.0"
+    kapt "se.ansman.kotshi:compiler:2.4.0"
 
     testImplementation 'junit:junit:4.13.2'
 
