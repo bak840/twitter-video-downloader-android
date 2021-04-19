@@ -20,7 +20,6 @@ import com.bakulabs.twittervideodownloader.R
 import com.bakulabs.twittervideodownloader.domain.Variant
 import com.bakulabs.twittervideodownloader.ui.theme.DownloaderTheme
 import kotlinx.coroutines.InternalCoroutinesApi
-import timber.log.Timber
 
 @ExperimentalComposeUiApi
 @ExperimentalMaterialApi
@@ -78,7 +77,7 @@ fun HomeScreen(
                     snackBarMessage,
                     openActionText
                 )) {
-                    SnackbarResult.Dismissed -> Timber.d("SnackBar dismissed")
+                    SnackbarResult.Dismissed -> {}
                     SnackbarResult.ActionPerformed -> openVariant(variantUri)
                 }
             } finally {

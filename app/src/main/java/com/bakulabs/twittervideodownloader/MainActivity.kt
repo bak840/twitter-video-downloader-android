@@ -20,7 +20,6 @@ import com.bakulabs.twittervideodownloader.ui.home.HomeViewModel
 import com.bakulabs.twittervideodownloader.ui.home.HomeViewModelFactory
 import com.bakulabs.twittervideodownloader.ui.theme.DownloaderTheme
 import kotlinx.coroutines.InternalCoroutinesApi
-import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
     private fun getClipboardText(): String {
@@ -50,7 +49,7 @@ class MainActivity : AppCompatActivity() {
     @ExperimentalMaterialApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Timber.plant(Timber.DebugTree())
+        // Timber.plant(Timber.DebugTree())
 
         val videoRepository = VideoRepository(applicationContext)
 

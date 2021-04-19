@@ -72,11 +72,11 @@ class VideoRepository(private val context: Context) {
                     } ?: throw RuntimeException("MediaStore failed for some reason")
                 } else {
                     emit(DownloadResult.Error("Error"))
-                    Timber.e("OkHttp failed for some reason")
+                    // Timber.e("OkHttp failed for some reason")
                     throw RuntimeException("OkHttp failed for some reason")
                 }
             } catch (exception: Exception) {
-                Timber.e(exception.toString())
+                // Timber.e(exception.toString())
                 emit(DownloadResult.Error("Error"))
             }
         }.flowOn(Dispatchers.Default)
@@ -109,9 +109,8 @@ class VideoRepository(private val context: Context) {
                     throw RuntimeException("OkHttp failed for some reason")
                 }
             } catch (exception: Exception) {
-                Timber.e(exception.toString())
+                // Timber.e(exception.toString())
                 emit(DownloadResult.Error("Error"))
-
             }
         }.flowOn(Dispatchers.Default)
     }

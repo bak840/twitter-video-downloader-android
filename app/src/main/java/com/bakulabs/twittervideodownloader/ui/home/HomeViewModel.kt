@@ -15,7 +15,6 @@ import com.bakulabs.twittervideodownloader.util.isTweetUrlValid
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 class HomeViewModel(private val videoRepository: VideoRepository) : ViewModel() {
     private val tweetRepository = TweetRepository()
@@ -67,7 +66,7 @@ class HomeViewModel(private val videoRepository: VideoRepository) : ViewModel() 
     }
 
     fun getVariants(url: String) {
-        Timber.d("Get variants button pressed")
+        // Timber.d("Get variants button pressed")
         if (isTweetUrlValid(url)) {
             val id = getTweetIdFromUrl(url)
             if (id != null) {
@@ -76,32 +75,32 @@ class HomeViewModel(private val videoRepository: VideoRepository) : ViewModel() 
                     when (val tweet = tweetRepository.getTweet(id)) {
                         is Result.Error -> {
                             isLoading = false
-                            tweet.exception.message?.let {
+                            /*tweet.exception.message?.let {
                                 Timber.e(it)
-                            }
+                            }*/
                         }
                         is Result.Success -> {
-                            Timber.d("Successfully fetched Tweet ${tweet.data.id}")
+                            // Timber.d("Successfully fetched Tweet ${tweet.data.id}")
                             variants = tweet.data.getVariants()
                             delay(100)
                             isLoading = false
                             if (variants.isNotEmpty()) {
-                                Timber.d("Show sheet")
+                                // Timber.d("Show sheet")
                                 isSheetShowing = true
                                 isSheetHiding = false
                             } else {
-                                Timber.i("No video in tweet")
+                                // Timber.i("No video in tweet")
                                 showErrorSnackBar(R.string.no_video_in_tweet)
                             }
                         }
                     }
                 }
             } else {
-                Timber.i("Failed to get tweet id")
+                // Timber.i("Failed to get tweet id")
                 showErrorSnackBar(R.string.tweet_url_invalid)
             }
         } else {
-            Timber.i("Tweet URL invalid")
+            // Timber.i("Tweet URL invalid")
             showErrorSnackBar(R.string.tweet_url_invalid)
         }
     }
@@ -121,7 +120,7 @@ class HomeViewModel(private val videoRepository: VideoRepository) : ViewModel() 
                 delay(50)
                 when (result) {
                     is DownloadResult.Error -> {
-                        Timber.e(result.message)
+                        // Timber.e(result.message)
                         showErrorSnackBar(R.string.download_failed)
                     }
                     is DownloadResult.Success -> {
