@@ -16,8 +16,15 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-class HomeViewModel(private val videoRepository: VideoRepository) : ViewModel() {
+class HomeViewModel(private val videoRepository: VideoRepository, initUrl: String) : ViewModel() {
     private val tweetRepository = TweetRepository()
+
+    var url: String by mutableStateOf(initUrl)
+        private set
+
+    fun updateUrl(newValue: String) {
+        url = newValue
+    }
 
     var variants: List<Variant> by mutableStateOf(listOf())
         private set
@@ -65,7 +72,7 @@ class HomeViewModel(private val videoRepository: VideoRepository) : ViewModel() 
         isErrorSnackBarShowing = false
     }
 
-    fun getVariants(url: String) {
+    fun getVariants() {
         // Timber.d("Get variants button pressed")
         if (isTweetUrlValid(url)) {
             val id = getTweetIdFromUrl(url)
@@ -109,8 +116,7 @@ class HomeViewModel(private val videoRepository: VideoRepository) : ViewModel() 
         viewModelScope.launch {
             isLoading = true
 
-            val tweetId = getTweetIdFromVariantUrl(variant.url)!!
-            val fileName = "${tweetId}_${variant.definition}"
+            val fileName = "${getTweetIdFromUrl(url)}_${variant.definition}"
 
             videoRepository.download(variant.url, fileName).collect { result ->
                 isLoading = false

@@ -51,21 +51,20 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         // Timber.plant(Timber.DebugTree())
 
-        val videoRepository = VideoRepository(applicationContext)
-
-        val viewModelFactory = HomeViewModelFactory(videoRepository)
-        val viewModel = ViewModelProvider(this, viewModelFactory).get(HomeViewModel::class.java)
-
         var initUrl = ""
         if (intent?.action == Intent.ACTION_SEND) {
             initUrl = intent.getStringExtra(Intent.EXTRA_TEXT).toString()
         }
 
+        val videoRepository = VideoRepository(applicationContext)
+
+        val viewModelFactory = HomeViewModelFactory(videoRepository, initUrl)
+        val viewModel = ViewModelProvider(this, viewModelFactory).get(HomeViewModel::class.java)
+
         setContent {
             DownloaderTheme {
                 Surface(color = MaterialTheme.colors.background) {
                     HomeActivityScreen(
-                        initUrl = initUrl,
                         viewModel = viewModel,
                         getClipboardText = this::getClipboardText,
                         openVariant = this::openVariant
@@ -80,13 +79,16 @@ class MainActivity : AppCompatActivity() {
 @ExperimentalComposeUiApi
 @Composable
 private fun HomeActivityScreen(
-    initUrl: String,
     viewModel: HomeViewModel,
     getClipboardText: () -> String,
     openVariant: (uri: Uri) -> Unit
 ) {
     HomeScreen(
-        initUrl = initUrl,
+        url = viewModel.url,
+        updateUrl = viewModel::updateUrl,
+        variants = viewModel.variants,
+        getVariants = viewModel::getVariants,
+        downloadVariant = viewModel::downloadVariant,
         isLoading = viewModel.isLoading,
         isSheetShowing = viewModel.isSheetShowing,
         isSheetHiding = viewModel.isSheetHiding,
@@ -98,9 +100,6 @@ private fun HomeActivityScreen(
         isErrorSnackBarShowing = viewModel.isErrorSnackBarShowing,
         errorResId = viewModel.errorResId,
         onDismissErrorSnackBar = viewModel::dismissErrorSnackBar,
-        variants = viewModel.variants,
-        getVariants = viewModel::getVariants,
-        downloadVariant = viewModel::downloadVariant,
         getClipboardText = getClipboardText
     )
 }

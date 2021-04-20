@@ -25,7 +25,11 @@ import kotlinx.coroutines.InternalCoroutinesApi
 @ExperimentalMaterialApi
 @Composable
 fun HomeScreen(
-    initUrl: String,
+    url: String,
+    updateUrl: (newValue: String) -> Unit,
+    variants: List<Variant>,
+    getVariants: () -> Unit,
+    downloadVariant: (variant: Variant) -> Unit,
     isLoading: Boolean,
     isSheetShowing: Boolean,
     isSheetHiding: Boolean,
@@ -37,9 +41,6 @@ fun HomeScreen(
     isErrorSnackBarShowing: Boolean,
     errorResId: Int,
     onDismissErrorSnackBar: () -> Unit,
-    variants: List<Variant>,
-    getVariants: (id: String) -> Unit,
-    downloadVariant: (variant: Variant) -> Unit,
     getClipboardText: () -> String,
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -140,16 +141,15 @@ fun HomeScreen(
                         end = 16.dp
                     )
                 ) {
-                    val (url, setUrl) = remember { mutableStateOf(initUrl) }
 
                     OutlinedTextField(
                         value = url,
-                        onValueChange = { setUrl(it) },
+                        onValueChange = { updateUrl(it) },
                         modifier = Modifier.fillMaxWidth(),
                         placeholder = { Text(text = stringResource(R.string.url_field_placeholder)) },
                         singleLine = true,
                         trailingIcon = {
-                            IconButton(onClick = { setUrl("") }) {
+                            IconButton(onClick = { updateUrl("") }) {
                                 Icon(
                                     Icons.Default.Clear,
                                     contentDescription = stringResource(R.string.url_field_clear),
@@ -163,14 +163,14 @@ fun HomeScreen(
                         modifier = Modifier,
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Button(onClick = { setUrl(getClipboardText()) }) {
+                        Button(onClick = { updateUrl(getClipboardText()) }) {
                             Text(text = stringResource(R.string.paste_button_text))
                         }
                         Spacer(modifier = Modifier.weight(1f))
                         Button(
                             onClick = {
                                 keyboardController?.hide()
-                                getVariants(url)
+                                getVariants()
                             }
                         ) {
                             Text(text = stringResource(R.string.button_download_text))
@@ -208,7 +208,11 @@ fun LoadingScreen(
 @Composable
 fun DefaultPreview() = DownloaderTheme {
     HomeScreen(
-        initUrl = "",
+        url = "",
+        updateUrl = {},
+        variants = listOf(),
+        getVariants = {},
+        downloadVariant = {},
         isLoading = false,
         isSheetShowing = false,
         isSheetHiding = false,
@@ -220,9 +224,7 @@ fun DefaultPreview() = DownloaderTheme {
         isErrorSnackBarShowing = false,
         errorResId = 0,
         onDismissErrorSnackBar = {},
-        variants = listOf(),
-        getVariants = {},
-        downloadVariant = {}) {
+        ) {
         ""
     }
 }
