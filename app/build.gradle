@@ -22,8 +22,11 @@ android {
             rootProject.file("secrets.properties")?.withInputStream {
                 secretsProperties.load(it)
             }
+            buildConfigField("String", "TWITTER_API_BEARER_TOKEN", (secretsProperties["BEARER_TOKEN"] ?: '""'))
         }
-        buildConfigField("String", "TWITTER_API_BEARER_TOKEN", (secretsProperties["BEARER_TOKEN"] ?: ""))
+        else {
+            buildConfigField("String", "TWITTER_API_BEARER_TOKEN", '""')
+        }
     }
 
     buildTypes {
