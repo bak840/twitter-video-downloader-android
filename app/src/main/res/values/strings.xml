@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">TwitterVideoDownloader</string>
+    <string name="app_name">Twitter Video Downloader</string>
     <string name="home_title">Home</string>
     <string name="instructions">Enter the tweet URL and click on the refresh button</string>
     <string name="variants_section_title">Videos</string>
