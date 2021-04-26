@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Twitter Video Downloader</string>
+    <string name="home_title">Acceuil</string>
+    <string name="instructions">Entrez l\'URL du tweet et appuyez sur le bouton rafraîchir</string>
+    <string name="button_paste_text">Coller lien</string>
+    <string name="button_download_text">Télécharger</string>
+    <string name="placeholder_url">Coller lien ici</string>
+    <string name="button_clear_url_text">Vider champ</string>
+    <string name="title_variants_sheet">Vidéos</string>
+    <string name="loading_text">Chargement</string>
+    <string name="tweet_url_invalid">Lien du tweet invalide</string>
+    <string name="no_video_in_tweet">Aucune vidéo dans le tweet</string>
+    <string name="download_successful">Fichier téléchargé</string>
+    <string name="download_failed">Erreur</string>
+    <string name="button_open_file_text">Ouvrir</string>
+    <string name="intent_open_file">Ouvrir avec</string>
+</resources>

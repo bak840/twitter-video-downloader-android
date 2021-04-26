@@ -13,6 +13,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -71,7 +72,7 @@ fun HomeScreen(
 
     if (isVariantSnackBarShowing) {
         val snackBarMessage = stringResource(R.string.download_successful)
-        val openActionText = stringResource(R.string.open_action)
+        val openActionText = stringResource(R.string.button_open_file_text)
         LaunchedEffect(isVariantSnackBarShowing) {
             try {
                 when (scaffoldState.snackbarHostState.showSnackbar(
@@ -101,27 +102,7 @@ fun HomeScreen(
     ModalBottomSheetLayout(
         sheetState = sheetState,
         sheetContent = {
-            Column(Modifier.padding(8.dp)) {
-                Text(text = stringResource(R.string.videos_sheet_title))
-                Spacer(modifier = Modifier.height(16.dp))
-                variants.forEach { variant ->
-                    Row(
-                        modifier = Modifier.padding(vertical = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(text = variant.definition)
-                        Spacer(modifier = Modifier.weight(1f))
-                        Text(text = variant.size)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        IconButton(onClick = { downloadVariant(variant) }) {
-                            Icon(
-                                imageVector = Icons.Default.FileDownload,
-                                contentDescription = null
-                            )
-                        }
-                    }
-                }
-            }
+            VariantsSheet(variants, downloadVariant)
         }
     ) {
         Scaffold(
@@ -142,42 +123,90 @@ fun HomeScreen(
                     )
                 ) {
 
-                    OutlinedTextField(
-                        value = url,
-                        onValueChange = { updateUrl(it) },
-                        modifier = Modifier.fillMaxWidth(),
-                        placeholder = { Text(text = stringResource(R.string.url_field_placeholder)) },
-                        singleLine = true,
-                        trailingIcon = {
-                            IconButton(onClick = { updateUrl("") }) {
-                                Icon(
-                                    Icons.Default.Clear,
-                                    contentDescription = stringResource(R.string.url_field_clear),
-                                    tint = if (isSystemInDarkTheme()) Color.White else Color.Black
-                                )
-                            }
-                        }
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Row(
-                        modifier = Modifier,
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Button(onClick = { updateUrl(getClipboardText()) }) {
-                            Text(text = stringResource(R.string.paste_button_text))
-                        }
-                        Spacer(modifier = Modifier.weight(1f))
-                        Button(
-                            onClick = {
-                                keyboardController?.hide()
-                                getVariants()
-                            }
-                        ) {
-                            Text(text = stringResource(R.string.button_download_text))
-                        }
-                    }
+                    UrlView(url, updateUrl, getClipboardText, keyboardController, getVariants)
                 }
             }
+        }
+    }
+}
+
+@ExperimentalComposeUiApi
+@Composable
+private fun UrlView(
+    url: String,
+    updateUrl: (newValue: String) -> Unit,
+    getClipboardText: () -> String,
+    keyboardController: SoftwareKeyboardController?,
+    getVariants: () -> Unit
+) {
+    OutlinedTextField(
+        value = url,
+        onValueChange = { updateUrl(it) },
+        modifier = Modifier.fillMaxWidth(),
+        placeholder = { Text(text = stringResource(R.string.placeholder_url)) },
+        singleLine = true,
+        trailingIcon = {
+            IconButton(onClick = { updateUrl("") }) {
+                Icon(
+                    Icons.Default.Clear,
+                    contentDescription = stringResource(R.string.button_clear_url_text),
+                    tint = if (isSystemInDarkTheme()) Color.White else Color.Black
+                )
+            }
+        }
+    )
+    Spacer(modifier = Modifier.height(16.dp))
+    Row(
+        modifier = Modifier,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Button(onClick = { updateUrl(getClipboardText()) }) {
+            Text(text = stringResource(R.string.button_paste_text))
+        }
+        Spacer(modifier = Modifier.weight(1f))
+        Button(
+            onClick = {
+                keyboardController?.hide()
+                getVariants()
+            }
+        ) {
+            Text(text = stringResource(R.string.button_download_text))
+        }
+    }
+}
+
+@Composable
+private fun VariantsSheet(
+    variants: List<Variant>,
+    downloadVariant: (variant: Variant) -> Unit
+) {
+    Column(Modifier.padding(8.dp)) {
+        Text(text = stringResource(R.string.title_variants_sheet))
+        Spacer(modifier = Modifier.height(16.dp))
+        variants.forEach { variant ->
+            VariantRow(variant, downloadVariant)
+        }
+    }
+}
+
+@Composable
+private fun VariantRow(
+    variant: Variant,
+    downloadVariant: (variant: Variant) -> Unit
+) {
+    Row(
+        modifier = Modifier.padding(vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(text = variant.definition)
+        Spacer(modifier = Modifier.weight(1f))
+        Text(text = variant.size)
+        Spacer(modifier = Modifier.width(8.dp))
+        IconButton(onClick = { downloadVariant(variant) }) {
+            Icon(
+                imageVector = Icons.Default.FileDownload,
+                contentDescription = null
+            )
         }
     }
 }

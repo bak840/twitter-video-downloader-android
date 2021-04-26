@@ -40,7 +40,7 @@ class MainActivity : AppCompatActivity() {
         target.setDataAndType(uri, "video/mp4")
         target.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
 
-        val intent = Intent.createChooser(target, getString(R.string.open_file_intent))
+        val intent = Intent.createChooser(target, getString(R.string.intent_open_file))
         startActivity(intent)
     }
 

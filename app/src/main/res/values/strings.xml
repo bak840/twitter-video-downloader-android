@@ -2,17 +2,16 @@
     <string name="app_name">Twitter Video Downloader</string>
     <string name="home_title">Home</string>
     <string name="instructions">Enter the tweet URL and click on the refresh button</string>
-    <string name="variants_section_title">Videos</string>
-    <string name="paste_button_text">Paste link</string>
+    <string name="button_paste_text">Paste link</string>
     <string name="button_download_text">Download</string>
-    <string name="url_field_placeholder">Paste link here</string>
-    <string name="url_field_clear">Clear field</string>
-    <string name="videos_sheet_title">Videos</string>
+    <string name="placeholder_url">Paste link here</string>
+    <string name="button_clear_url_text">Clear field</string>
+    <string name="title_variants_sheet">Videos</string>
     <string name="loading_text">Loading</string>
     <string name="tweet_url_invalid">Tweet link invalid</string>
     <string name="no_video_in_tweet">No video in tweet</string>
     <string name="download_successful">File downloaded</string>
     <string name="download_failed">Error</string>
-    <string name="open_action">Open</string>
-    <string name="open_file_intent">Open File</string>
+    <string name="button_open_file_text">Open</string>
+    <string name="intent_open_file">Open with</string>
 </resources>
