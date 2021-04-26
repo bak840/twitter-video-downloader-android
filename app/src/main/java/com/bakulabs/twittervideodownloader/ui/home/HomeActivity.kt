@@ -1,4 +1,4 @@
-package com.bakulabs.twittervideodownloader
+package com.bakulabs.twittervideodownloader.ui.home
 
 import android.content.ClipDescription.MIMETYPE_TEXT_PLAIN
 import android.content.ClipboardManager
@@ -14,14 +14,12 @@ import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.lifecycle.ViewModelProvider
-import com.bakulabs.twittervideodownloader.services.VideoDownloadService
-import com.bakulabs.twittervideodownloader.ui.home.HomeScreen
-import com.bakulabs.twittervideodownloader.ui.home.HomeViewModel
-import com.bakulabs.twittervideodownloader.ui.home.HomeViewModelFactory
+import com.bakulabs.twittervideodownloader.DownloaderApplication
+import com.bakulabs.twittervideodownloader.R
 import com.bakulabs.twittervideodownloader.ui.theme.DownloaderTheme
 import kotlinx.coroutines.InternalCoroutinesApi
 
-class MainActivity : AppCompatActivity() {
+class HomeActivity : AppCompatActivity() {
     private fun getClipboardText(): String {
         val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
 
@@ -49,17 +47,23 @@ class MainActivity : AppCompatActivity() {
     @ExperimentalMaterialApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Timber.plant(Timber.DebugTree())
 
-        var initUrl = ""
+        val appContainer = (application as DownloaderApplication).appContainer
+
+        val tweetRepository = appContainer.tweetRepository
+        val videoDownloadService = appContainer.videoDownloadService
+
+        var initUrl = "https://twitter.com/bak840/status/1362860958092316675?s=20"
         if (intent?.action == Intent.ACTION_SEND) {
             initUrl = intent.getStringExtra(Intent.EXTRA_TEXT).toString()
         }
 
-        val videoRepository = VideoDownloadService(applicationContext)
-
-        val viewModelFactory = HomeViewModelFactory(videoRepository, initUrl)
-        val viewModel = ViewModelProvider(this, viewModelFactory).get(HomeViewModel::class.java)
+        val viewModelFactory = HomeViewModelFactory(
+            tweetRepository,
+            videoDownloadService,
+            initUrl
+        )
+        val viewModel = viewModelFactory.create(HomeViewModel::class.java)
 
         setContent {
             DownloaderTheme {

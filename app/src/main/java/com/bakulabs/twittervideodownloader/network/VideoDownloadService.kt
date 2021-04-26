@@ -1,7 +1,7 @@
-package com.bakulabs.twittervideodownloader.services
+package com.bakulabs.twittervideodownloader.network
 
+import android.content.ContentResolver
 import android.content.ContentValues
-import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
@@ -15,6 +15,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okio.buffer
 import okio.sink
+import timber.log.Timber
 import java.io.File
 
 sealed class DownloadResult {
@@ -22,7 +23,7 @@ sealed class DownloadResult {
     data class Error(val message: String) : DownloadResult()
 }
 
-class VideoDownloadService(private val context: Context) {
+class VideoDownloadService(private val resolver: ContentResolver) {
     private val ok = OkHttpClient()
     private val collection =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) MediaStore.Video.Media.getContentUri(
@@ -50,7 +51,6 @@ class VideoDownloadService(private val context: Context) {
                         put(MediaStore.Video.Media.IS_PENDING, 2)
                     }
 
-                    val resolver = context.contentResolver
                     val uri = resolver.insert(collection, values)
 
                     uri?.let {
@@ -70,11 +70,11 @@ class VideoDownloadService(private val context: Context) {
                     } ?: throw RuntimeException("MediaStore failed for some reason")
                 } else {
                     emit(DownloadResult.Error("Error"))
-                    // Timber.e("OkHttp failed for some reason")
+                    Timber.e("OkHttp failed for some reason")
                     throw RuntimeException("OkHttp failed for some reason")
                 }
             } catch (exception: Exception) {
-                // Timber.e(exception.toString())
+                Timber.e(exception.toString())
                 emit(DownloadResult.Error("Error"))
             }
         }.flowOn(Dispatchers.Default)
@@ -107,7 +107,7 @@ class VideoDownloadService(private val context: Context) {
                     throw RuntimeException("OkHttp failed for some reason")
                 }
             } catch (exception: Exception) {
-                // Timber.e(exception.toString())
+                Timber.e(exception.toString())
                 emit(DownloadResult.Error("Error"))
             }
         }.flowOn(Dispatchers.Default)

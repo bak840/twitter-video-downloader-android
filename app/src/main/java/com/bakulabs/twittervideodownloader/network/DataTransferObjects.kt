@@ -1,10 +1,10 @@
-package com.bakulabs.twittervideodownloader.api
+package com.bakulabs.twittervideodownloader.network
 
 import com.bakulabs.twittervideodownloader.util.getVariantDefinitionFromUrl
 import com.squareup.moshi.Json
-import se.ansman.kotshi.JsonSerializable
+import com.squareup.moshi.JsonClass
 
-@JsonSerializable
+@JsonClass(generateAdapter = true)
 data class Tweet(
     val id: Long,
 
@@ -12,23 +12,23 @@ data class Tweet(
     val extendedEntities: ExtendedEntities?,
 )
 
-@JsonSerializable
+@JsonClass(generateAdapter = true)
 data class ExtendedEntities(
     val media: List<Media>
 )
 
-@JsonSerializable
+@JsonClass(generateAdapter = true)
 data class Media(
     @Json(name = "video_info")
     val videoInfo: VideoInfo?,
 )
 
-@JsonSerializable
+@JsonClass(generateAdapter = true)
 data class VideoInfo(
     val variants: List<Variant>
 )
 
-@JsonSerializable
+@JsonClass(generateAdapter = true)
 data class Variant(
     val bitrate: Long? = null,
 
