@@ -1,6 +1,6 @@
 # Twitter Video Downloader
 
-This is an Android app to download twitter videos by the Twitter API.
+This is an Android app to download twitter videos by using the Twitter API.
 
 It's built in Kotlin with the latest development tools: Jetpack Compose, ViewModel and Retrofit.
 
