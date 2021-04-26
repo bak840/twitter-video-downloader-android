@@ -11,6 +11,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.SoftwareKeyboardController
@@ -180,7 +181,7 @@ private fun VariantsSheet(
     variants: List<Variant>,
     downloadVariant: (variant: Variant) -> Unit
 ) {
-    Column(Modifier.padding(8.dp)) {
+    Column(Modifier.padding(vertical = 8.dp, horizontal = 16.dp)) {
         Text(text = stringResource(R.string.title_variants_sheet))
         Spacer(modifier = Modifier.height(16.dp))
         variants.forEach { variant ->
@@ -195,13 +196,11 @@ private fun VariantRow(
     downloadVariant: (variant: Variant) -> Unit
 ) {
     Row(
-        modifier = Modifier.padding(vertical = 8.dp),
+        modifier = Modifier.padding(bottom = 4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(text = variant.definition)
         Spacer(modifier = Modifier.weight(1f))
-        Text(text = variant.size)
-        Spacer(modifier = Modifier.width(8.dp))
         IconButton(onClick = { downloadVariant(variant) }) {
             Icon(
                 imageVector = Icons.Default.FileDownload,

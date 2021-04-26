@@ -45,7 +45,6 @@ fun Tweet.getVariants() = extendedEntities?.media?.get(0)?.videoInfo?.variants?.
 fun Variant.asDomainModel(): com.bakulabs.twittervideodownloader.domain.Variant {
     return com.bakulabs.twittervideodownloader.domain.Variant(
         url = url,
-        definition = getVariantDefinitionFromUrl(url) ?: "",
-        size = ""
+        definition = getVariantDefinitionFromUrl(url) ?: ""
     )
 }
