@@ -2,6 +2,7 @@
 buildscript {
     ext {
         compose_version = '1.0.0-beta04'
+        coroutinesVersion = '1.4.3'
     }
     repositories {
         google()
