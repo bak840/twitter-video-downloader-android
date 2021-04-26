@@ -1,8 +1,7 @@
-package com.bakulabs.twittervideodownloader.api
+package com.bakulabs.twittervideodownloader.services
 
 import android.content.ContentValues
 import android.content.Context
-import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
@@ -16,7 +15,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okio.buffer
 import okio.sink
-import timber.log.Timber
 import java.io.File
 
 sealed class DownloadResult {
@@ -24,7 +22,7 @@ sealed class DownloadResult {
     data class Error(val message: String) : DownloadResult()
 }
 
-class VideoRepository(private val context: Context) {
+class VideoDownloadService(private val context: Context) {
     private val ok = OkHttpClient()
     private val collection =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) MediaStore.Video.Media.getContentUri(

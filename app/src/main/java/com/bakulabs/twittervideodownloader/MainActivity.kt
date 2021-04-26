@@ -14,7 +14,7 @@ import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.lifecycle.ViewModelProvider
-import com.bakulabs.twittervideodownloader.api.VideoRepository
+import com.bakulabs.twittervideodownloader.services.VideoDownloadService
 import com.bakulabs.twittervideodownloader.ui.home.HomeScreen
 import com.bakulabs.twittervideodownloader.ui.home.HomeViewModel
 import com.bakulabs.twittervideodownloader.ui.home.HomeViewModelFactory
@@ -56,7 +56,7 @@ class MainActivity : AppCompatActivity() {
             initUrl = intent.getStringExtra(Intent.EXTRA_TEXT).toString()
         }
 
-        val videoRepository = VideoRepository(applicationContext)
+        val videoRepository = VideoDownloadService(applicationContext)
 
         val viewModelFactory = HomeViewModelFactory(videoRepository, initUrl)
         val viewModel = ViewModelProvider(this, viewModelFactory).get(HomeViewModel::class.java)
