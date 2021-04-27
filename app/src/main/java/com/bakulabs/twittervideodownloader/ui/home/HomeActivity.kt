@@ -14,20 +14,14 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.lifecycle.ViewModelProvider
-import com.bakulabs.twittervideodownloader.DownloaderApplication
 import com.bakulabs.twittervideodownloader.R
-import com.bakulabs.twittervideodownloader.data.DefaultTweetRepository
-import com.bakulabs.twittervideodownloader.network.VideoDownloadService
 import com.bakulabs.twittervideodownloader.ui.theme.DownloaderTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.InternalCoroutinesApi
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class HomeActivity : AppCompatActivity() {
-    @Inject lateinit var tweetRepository: DefaultTweetRepository
-    @Inject lateinit var downloadService: VideoDownloadService
+    private val viewModel: HomeViewModel by viewModels()
 
     private fun getClipboardText(): String {
         val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
@@ -60,13 +54,7 @@ class HomeActivity : AppCompatActivity() {
         if (intent?.action == Intent.ACTION_SEND) {
             initUrl = intent.getStringExtra(Intent.EXTRA_TEXT).toString()
         }
-
-        val viewModelFactory = HomeViewModelFactory(
-            tweetRepository,
-            downloadService,
-            initUrl
-        )
-        val viewModel = viewModelFactory.create(HomeViewModel::class.java)
+        viewModel.updateUrl(initUrl)
 
         setContent {
             DownloaderTheme {

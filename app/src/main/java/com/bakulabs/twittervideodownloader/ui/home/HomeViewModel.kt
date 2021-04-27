@@ -8,24 +8,30 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bakulabs.twittervideodownloader.R
 import com.bakulabs.twittervideodownloader.data.DataResult
-import com.bakulabs.twittervideodownloader.data.TweetRepository
+import com.bakulabs.twittervideodownloader.data.DefaultTweetRepository
 import com.bakulabs.twittervideodownloader.domain.Variant
-import com.bakulabs.twittervideodownloader.network.getVariants
 import com.bakulabs.twittervideodownloader.network.DownloadResult
 import com.bakulabs.twittervideodownloader.network.VideoDownloadService
+import com.bakulabs.twittervideodownloader.network.getVariants
 import com.bakulabs.twittervideodownloader.util.getTweetIdFromUrl
 import com.bakulabs.twittervideodownloader.util.isTweetUrlValid
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import javax.inject.Inject
 
-class HomeViewModel(
-    private val tweetRepository: TweetRepository,
-    private val videoDownloadService: VideoDownloadService,
-    initUrl: String
-) : ViewModel() {
-    var url: String by mutableStateOf(initUrl)
+@HiltViewModel
+class HomeViewModel @Inject constructor() : ViewModel() {
+    @Inject
+    lateinit var tweetRepository: DefaultTweetRepository
+
+    @Inject
+    lateinit var downloadService: VideoDownloadService
+
+
+    var url: String by mutableStateOf("initUrl")
         private set
 
     fun updateUrl(newValue: String) {
@@ -124,7 +130,7 @@ class HomeViewModel(
 
             val fileName = "${getTweetIdFromUrl(url)}_${variant.definition}"
 
-            videoDownloadService.download(variant.url, fileName).collect { result ->
+            downloadService.download(variant.url, fileName).collect { result ->
                 isLoading = false
                 delay(50)
                 isSheetHiding = true

@@ -36,14 +36,16 @@ object ApiModule {
     }.build()
 
     @Provides
-    fun providesRetrofit(client: OkHttpClient, moshi: Moshi, baseUrl: String): Retrofit = Retrofit.Builder()
-        .client(client)
-        .baseUrl(baseUrl)
-        .addConverterFactory(MoshiConverterFactory.create(moshi))
-        .build()
+    fun providesRetrofit(client: OkHttpClient, moshi: Moshi, baseUrl: String): Retrofit =
+        Retrofit.Builder()
+            .client(client)
+            .baseUrl(baseUrl)
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
+            .build()
 
     @Provides
-    fun provideApiService(retrofit: Retrofit): TwitterApiService = retrofit.create(TwitterApiService::class.java)
+    fun provideApiService(retrofit: Retrofit): TwitterApiService =
+        retrofit.create(TwitterApiService::class.java)
 
     @Provides
     @Singleton

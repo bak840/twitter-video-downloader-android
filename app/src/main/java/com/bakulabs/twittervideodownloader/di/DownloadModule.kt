@@ -14,5 +14,6 @@ import javax.inject.Singleton
 object DownloadModule {
     @Provides
     @Singleton
-    fun provideDownloadService(@ApplicationContext context: Context) = VideoDownloadService(context.contentResolver)
+    fun provideDownloadService(@ApplicationContext context: Context) =
+        VideoDownloadService(context.contentResolver)
 }

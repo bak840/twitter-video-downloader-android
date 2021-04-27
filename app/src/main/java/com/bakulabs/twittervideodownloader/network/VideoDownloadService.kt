@@ -22,7 +22,7 @@ import javax.inject.Singleton
 
 @Singleton
 class VideoDownloadService @Inject constructor(private val resolver: ContentResolver) {
-    private val ok = OkHttpClient()
+    private val okHttpClient = OkHttpClient()
     private val collection =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) MediaStore.Video.Media.getContentUri(
             MediaStore.VOLUME_EXTERNAL
@@ -40,7 +40,7 @@ class VideoDownloadService @Inject constructor(private val resolver: ContentReso
     private suspend fun downloadQ(url: String, name: String): Flow<DownloadResult> {
         return flow {
             try {
-                val response = ok.newCall(Request.Builder().url(url).build()).execute()
+                val response = okHttpClient.newCall(Request.Builder().url(url).build()).execute()
                 if (response.isSuccessful) {
                     val values = ContentValues().apply {
                         put(MediaStore.Video.Media.DISPLAY_NAME, name)
@@ -93,7 +93,7 @@ class VideoDownloadService @Inject constructor(private val resolver: ContentReso
                     "$name.mp4"
                 )
                 file.createNewFile()
-                val response = ok.newCall(Request.Builder().url(url).build()).execute()
+                val response = okHttpClient.newCall(Request.Builder().url(url).build()).execute()
 
                 if (response.isSuccessful) {
                     val sink = file.sink().buffer()

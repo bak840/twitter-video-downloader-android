@@ -38,9 +38,10 @@ data class Variant(
     val url: String
 )
 
-fun Tweet.getVariants() = extendedEntities?.media?.get(0)?.videoInfo?.variants?.filter { it.contentType == "video/mp4" }
-    ?.map { it.asDomainModel() }
-    ?: listOf()
+fun Tweet.getVariants() =
+    extendedEntities?.media?.get(0)?.videoInfo?.variants?.filter { it.contentType == "video/mp4" }
+        ?.map { it.asDomainModel() }
+        ?: listOf()
 
 fun Variant.asDomainModel(): com.bakulabs.twittervideodownloader.domain.Variant {
     return com.bakulabs.twittervideodownloader.domain.Variant(

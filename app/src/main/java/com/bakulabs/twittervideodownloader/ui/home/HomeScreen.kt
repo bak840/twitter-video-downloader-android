@@ -80,7 +80,8 @@ fun HomeScreen(
                     snackBarMessage,
                     openActionText
                 )) {
-                    SnackbarResult.Dismissed -> {}
+                    SnackbarResult.Dismissed -> {
+                    }
                     SnackbarResult.ActionPerformed -> openVariant(variantUri)
                 }
             } finally {
@@ -252,7 +253,7 @@ fun DefaultPreview() = DownloaderTheme {
         isErrorSnackBarShowing = false,
         errorResId = 0,
         onDismissErrorSnackBar = {},
-        ) {
+    ) {
         ""
     }
 }
