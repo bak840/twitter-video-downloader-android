@@ -2,7 +2,7 @@ package com.bakulabs.twittervideodownloader.ui.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.bakulabs.twittervideodownloader.data.source.TweetRepository
+import com.bakulabs.twittervideodownloader.data.TweetRepository
 import com.bakulabs.twittervideodownloader.network.VideoDownloadService
 
 @Suppress("UNCHECKED_CAST")

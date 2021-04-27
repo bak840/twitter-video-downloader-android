@@ -18,11 +18,6 @@ import okio.sink
 import timber.log.Timber
 import java.io.File
 
-sealed class DownloadResult {
-    data class Success(val uri: Uri) : DownloadResult()
-    data class Error(val message: String) : DownloadResult()
-}
-
 class VideoDownloadService(private val resolver: ContentResolver) {
     private val ok = OkHttpClient()
     private val collection =

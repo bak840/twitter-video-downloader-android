@@ -7,8 +7,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bakulabs.twittervideodownloader.R
-import com.bakulabs.twittervideodownloader.data.source.*
-import com.bakulabs.twittervideodownloader.data.Result
+import com.bakulabs.twittervideodownloader.data.DataResult
+import com.bakulabs.twittervideodownloader.data.TweetRepository
 import com.bakulabs.twittervideodownloader.domain.Variant
 import com.bakulabs.twittervideodownloader.network.getVariants
 import com.bakulabs.twittervideodownloader.network.DownloadResult
@@ -86,13 +86,13 @@ class HomeViewModel(
                 viewModelScope.launch {
                     isLoading = true
                     when (val tweet = tweetRepository.getTweet(id)) {
-                        is Result.Error -> {
+                        is DataResult.Error -> {
                             isLoading = false
                             /*tweet.exception.message?.let {
                                 Timber.e(it)
                             }*/
                         }
-                        is Result.Success -> {
+                        is DataResult.Success -> {
                             Timber.d("Successfully fetched Tweet ${tweet.data.id}")
                             variants = tweet.data.getVariants()
                             delay(100)

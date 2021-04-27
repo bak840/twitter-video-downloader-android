@@ -1,6 +1,5 @@
-package com.bakulabs.twittervideodownloader.data.source
+package com.bakulabs.twittervideodownloader.data
 
-import com.bakulabs.twittervideodownloader.data.Result
 import com.bakulabs.twittervideodownloader.network.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
@@ -61,14 +60,14 @@ class FakeTweetRepositoryTest {
 
     @Test
     fun getTweet_success() = runBlockingTest {
-        val response = FakeTweetRepository(tweets).getTweet("11111111") as Result.Success
+        val response = FakeTweetRepository(tweets).getTweet("11111111") as DataResult.Success
 
         assertThat(response.data, IsEqual(tweets[0]))
     }
 
     @Test
     fun getTweet_error() = runBlockingTest {
-        val response = FakeTweetRepository(tweets).getTweet("33333333") as Result.Error
+        val response = FakeTweetRepository(tweets).getTweet("33333333") as DataResult.Error
 
         assertThat(response.exception.message, IsEqual("Tweet not found"))
     }

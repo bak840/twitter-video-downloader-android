@@ -1,7 +1,7 @@
 package com.bakulabs.twittervideodownloader
 
 import android.content.ContentResolver
-import com.bakulabs.twittervideodownloader.data.source.DefaultTweetRepository
+import com.bakulabs.twittervideodownloader.data.DefaultTweetRepository
 import com.bakulabs.twittervideodownloader.network.BASE_URL
 import com.bakulabs.twittervideodownloader.network.TwitterApiService
 import com.bakulabs.twittervideodownloader.network.VideoDownloadService
