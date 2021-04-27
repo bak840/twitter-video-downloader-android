@@ -17,8 +17,11 @@ import okio.buffer
 import okio.sink
 import timber.log.Timber
 import java.io.File
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class VideoDownloadService(private val resolver: ContentResolver) {
+@Singleton
+class VideoDownloadService @Inject constructor(private val resolver: ContentResolver) {
     private val ok = OkHttpClient()
     private val collection =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) MediaStore.Video.Media.getContentUri(

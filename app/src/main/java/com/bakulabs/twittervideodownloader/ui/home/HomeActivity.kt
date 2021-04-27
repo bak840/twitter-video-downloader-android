@@ -7,6 +7,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
@@ -16,10 +17,18 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.lifecycle.ViewModelProvider
 import com.bakulabs.twittervideodownloader.DownloaderApplication
 import com.bakulabs.twittervideodownloader.R
+import com.bakulabs.twittervideodownloader.data.DefaultTweetRepository
+import com.bakulabs.twittervideodownloader.network.VideoDownloadService
 import com.bakulabs.twittervideodownloader.ui.theme.DownloaderTheme
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.InternalCoroutinesApi
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class HomeActivity : AppCompatActivity() {
+    @Inject lateinit var tweetRepository: DefaultTweetRepository
+    @Inject lateinit var downloadService: VideoDownloadService
+
     private fun getClipboardText(): String {
         val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
 
@@ -47,12 +56,6 @@ class HomeActivity : AppCompatActivity() {
     @ExperimentalMaterialApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        val appContainer = (application as DownloaderApplication).appContainer
-
-        val tweetRepository = appContainer.tweetRepository
-        val videoDownloadService = appContainer.videoDownloadService
-
         var initUrl = "https://twitter.com/bak840/status/1362860958092316675?s=20"
         if (intent?.action == Intent.ACTION_SEND) {
             initUrl = intent.getStringExtra(Intent.EXTRA_TEXT).toString()
@@ -60,7 +63,7 @@ class HomeActivity : AppCompatActivity() {
 
         val viewModelFactory = HomeViewModelFactory(
             tweetRepository,
-            videoDownloadService,
+            downloadService,
             initUrl
         )
         val viewModel = viewModelFactory.create(HomeViewModel::class.java)

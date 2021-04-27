@@ -88,9 +88,9 @@ class HomeViewModel(
                     when (val tweet = tweetRepository.getTweet(id)) {
                         is DataResult.Error -> {
                             isLoading = false
-                            /*tweet.exception.message?.let {
+                            tweet.exception.message?.let {
                                 Timber.e(it)
-                            }*/
+                            }
                         }
                         is DataResult.Success -> {
                             Timber.d("Successfully fetched Tweet ${tweet.data.id}")
