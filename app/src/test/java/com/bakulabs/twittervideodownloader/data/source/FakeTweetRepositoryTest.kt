@@ -10,23 +10,48 @@ import org.junit.Test
 
 @ExperimentalCoroutinesApi
 class FakeTweetRepositoryTest {
-    private val tweet = Tweet(
-        id = 123456789L,
-        extendedEntities = ExtendedEntities(
-            media = listOf(
-                Media(
-                    videoInfo = VideoInfo(
-                        variants = listOf(
-                            Variant(
-                                bitrate = 2176000L,
-                                contentType = "video/mp4",
-                                url = "https://video.twimg.com/ext_tw_video/123456789/pu/vid/1280x720/123456789.mp4?tag=10"
-                            ),
-                            Variant(
-                                bitrate = 832000L,
-                                contentType = "video/mp4",
-                                url = "https://video.twimg.com/ext_tw_video/123456789/pu/vid/1280x720/123456789.mp4?tag=10"
-                            ),
+    private val tweets = listOf(
+        Tweet(
+            id = 11111111L,
+            extendedEntities = ExtendedEntities(
+                media = listOf(
+                    Media(
+                        videoInfo = VideoInfo(
+                            variants = listOf(
+                                Variant(
+                                    bitrate = 2176000L,
+                                    contentType = "video/mp4",
+                                    url = "https://video.twimg.com/ext_tw_video/11111111/pu/vid/1280x720/11111111.mp4?tag=10"
+                                ),
+                                Variant(
+                                    bitrate = 832000L,
+                                    contentType = "video/mp4",
+                                    url = "https://video.twimg.com/ext_tw_video/11111111/pu/vid/1280x720/11111111.mp4?tag=10"
+                                ),
+                            )
+                        )
+                    )
+                )
+            )
+        ),
+        Tweet(
+            id = 22222222L,
+            extendedEntities = ExtendedEntities(
+                media = listOf(
+                    Media(
+                        videoInfo = VideoInfo(
+                            variants = listOf(
+                                Variant(
+                                    bitrate = 2176000L,
+                                    contentType = "video/mp4",
+                                    url = "https://video.twimg.com/ext_tw_video/22222222/pu/vid/1280x720/22222222.mp4?tag=10"
+                                ),
+                                Variant(
+                                    bitrate = 832000L,
+                                    contentType = "video/mp4",
+                                    url = "https://video.twimg.com/ext_tw_video/22222222/pu/vid/1280x720/22222222.mp4?tag=10"
+                                ),
+                            )
                         )
                     )
                 )
@@ -36,15 +61,15 @@ class FakeTweetRepositoryTest {
 
     @Test
     fun getTweet_success() = runBlockingTest {
-        val response = FakeTweetRepository(tweet).getTweet("") as Result.Success
+        val response = FakeTweetRepository(tweets).getTweet("11111111") as Result.Success
 
-        assertThat(response.data, IsEqual(tweet))
+        assertThat(response.data, IsEqual(tweets[0]))
     }
 
     @Test
     fun getTweet_error() = runBlockingTest {
-        val response = FakeTweetRepository(null).getTweet("") as Result.Error
+        val response = FakeTweetRepository(tweets).getTweet("33333333") as Result.Error
 
-        assertThat(response.exception.message, IsEqual("tweet not found"))
+        assertThat(response.exception.message, IsEqual("Tweet not found"))
     }
 }
