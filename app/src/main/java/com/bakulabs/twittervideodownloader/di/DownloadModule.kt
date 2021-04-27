@@ -1,7 +1,7 @@
 package com.bakulabs.twittervideodownloader.di
 
 import android.content.Context
-import com.bakulabs.twittervideodownloader.network.VideoDownloadService
+import com.bakulabs.twittervideodownloader.network.DefaultVideoDownloadService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -15,5 +15,5 @@ object DownloadModule {
     @Provides
     @Singleton
     fun provideDownloadService(@ApplicationContext context: Context) =
-        VideoDownloadService(context.contentResolver)
+        DefaultVideoDownloadService(context.contentResolver)
 }

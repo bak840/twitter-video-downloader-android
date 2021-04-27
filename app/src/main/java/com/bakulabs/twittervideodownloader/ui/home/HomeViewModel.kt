@@ -11,7 +11,7 @@ import com.bakulabs.twittervideodownloader.data.DataResult
 import com.bakulabs.twittervideodownloader.data.DefaultTweetRepository
 import com.bakulabs.twittervideodownloader.domain.Variant
 import com.bakulabs.twittervideodownloader.network.DownloadResult
-import com.bakulabs.twittervideodownloader.network.VideoDownloadService
+import com.bakulabs.twittervideodownloader.network.DefaultVideoDownloadService
 import com.bakulabs.twittervideodownloader.network.getVariants
 import com.bakulabs.twittervideodownloader.util.getTweetIdFromUrl
 import com.bakulabs.twittervideodownloader.util.isTweetUrlValid
@@ -28,7 +28,7 @@ class HomeViewModel @Inject constructor() : ViewModel() {
     lateinit var tweetRepository: DefaultTweetRepository
 
     @Inject
-    lateinit var downloadService: VideoDownloadService
+    lateinit var downloadService: DefaultVideoDownloadService
 
 
     var url: String by mutableStateOf("initUrl")
