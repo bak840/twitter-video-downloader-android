@@ -1,10 +1,10 @@
-package com.bakulabs.twittervideodownloader.api
+package com.bakulabs.twittervideodownloader.network
 
 import com.bakulabs.twittervideodownloader.util.getVariantDefinitionFromUrl
 import com.squareup.moshi.Json
-import se.ansman.kotshi.JsonSerializable
+import com.squareup.moshi.JsonClass
 
-@JsonSerializable
+@JsonClass(generateAdapter = true)
 data class Tweet(
     val id: Long,
 
@@ -12,23 +12,23 @@ data class Tweet(
     val extendedEntities: ExtendedEntities?,
 )
 
-@JsonSerializable
+@JsonClass(generateAdapter = true)
 data class ExtendedEntities(
     val media: List<Media>
 )
 
-@JsonSerializable
+@JsonClass(generateAdapter = true)
 data class Media(
     @Json(name = "video_info")
     val videoInfo: VideoInfo?,
 )
 
-@JsonSerializable
+@JsonClass(generateAdapter = true)
 data class VideoInfo(
     val variants: List<Variant>
 )
 
-@JsonSerializable
+@JsonClass(generateAdapter = true)
 data class Variant(
     val bitrate: Long? = null,
 
@@ -38,14 +38,14 @@ data class Variant(
     val url: String
 )
 
-fun Tweet.getVariants() = extendedEntities?.media?.get(0)?.videoInfo?.variants?.filter { it.contentType == "video/mp4" }
-    ?.map { it.asDomainModel() }
-    ?: listOf()
+fun Tweet.getVariants() =
+    extendedEntities?.media?.get(0)?.videoInfo?.variants?.filter { it.contentType == "video/mp4" }
+        ?.map { it.asDomainModel() }
+        ?: listOf()
 
 fun Variant.asDomainModel(): com.bakulabs.twittervideodownloader.domain.Variant {
     return com.bakulabs.twittervideodownloader.domain.Variant(
         url = url,
-        definition = getVariantDefinitionFromUrl(url) ?: "",
-        size = ""
+        definition = getVariantDefinitionFromUrl(url) ?: ""
     )
 }

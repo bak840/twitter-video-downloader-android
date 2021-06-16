@@ -1,8 +1,7 @@
-package com.bakulabs.twittervideodownloader.api
+package com.bakulabs.twittervideodownloader.network
 
+import android.content.ContentResolver
 import android.content.ContentValues
-import android.content.Context
-import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
@@ -18,20 +17,18 @@ import okio.buffer
 import okio.sink
 import timber.log.Timber
 import java.io.File
+import javax.inject.Inject
+import javax.inject.Singleton
 
-sealed class DownloadResult {
-    data class Success(val uri: Uri) : DownloadResult()
-    data class Error(val message: String) : DownloadResult()
-}
-
-class VideoRepository(private val context: Context) {
-    private val ok = OkHttpClient()
+@Singleton
+class DefaultVideoDownloadService @Inject constructor(private val resolver: ContentResolver): VideoDownloadService {
+    private val okHttpClient = OkHttpClient()
     private val collection =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) MediaStore.Video.Media.getContentUri(
             MediaStore.VOLUME_EXTERNAL
         ) else MediaStore.Video.Media.EXTERNAL_CONTENT_URI
 
-    suspend fun download(url: String, name: String): Flow<DownloadResult> {
+    override suspend fun download(url: String, name: String): Flow<DownloadResult> {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) downloadQ(
             url,
             name
@@ -43,7 +40,7 @@ class VideoRepository(private val context: Context) {
     private suspend fun downloadQ(url: String, name: String): Flow<DownloadResult> {
         return flow {
             try {
-                val response = ok.newCall(Request.Builder().url(url).build()).execute()
+                val response = okHttpClient.newCall(Request.Builder().url(url).build()).execute()
                 if (response.isSuccessful) {
                     val values = ContentValues().apply {
                         put(MediaStore.Video.Media.DISPLAY_NAME, name)
@@ -52,10 +49,9 @@ class VideoRepository(private val context: Context) {
                         put(MediaStore.Video.Media.IS_PENDING, 2)
                     }
 
-                    val resolver = context.contentResolver
                     val uri = resolver.insert(collection, values)
 
-                    uri?.let {
+                    uri?.let { it ->
                         resolver.openOutputStream(uri)?.use { outputStream ->
                             val sink = outputStream.sink().buffer()
 
@@ -72,16 +68,17 @@ class VideoRepository(private val context: Context) {
                     } ?: throw RuntimeException("MediaStore failed for some reason")
                 } else {
                     emit(DownloadResult.Error("Error"))
-                    // Timber.e("OkHttp failed for some reason")
+                    Timber.e("OkHttp failed for some reason")
                     throw RuntimeException("OkHttp failed for some reason")
                 }
             } catch (exception: Exception) {
-                // Timber.e(exception.toString())
+                Timber.e(exception.toString())
                 emit(DownloadResult.Error("Error"))
             }
         }.flowOn(Dispatchers.Default)
     }
 
+    @Suppress("DEPRECATION")
     private suspend fun downloadLegacy(
         url: String,
         name: String
@@ -97,7 +94,7 @@ class VideoRepository(private val context: Context) {
                     "$name.mp4"
                 )
                 file.createNewFile()
-                val response = ok.newCall(Request.Builder().url(url).build()).execute()
+                val response = okHttpClient.newCall(Request.Builder().url(url).build()).execute()
 
                 if (response.isSuccessful) {
                     val sink = file.sink().buffer()
@@ -109,7 +106,7 @@ class VideoRepository(private val context: Context) {
                     throw RuntimeException("OkHttp failed for some reason")
                 }
             } catch (exception: Exception) {
-                // Timber.e(exception.toString())
+                Timber.e(exception.toString())
                 emit(DownloadResult.Error("Error"))
             }
         }.flowOn(Dispatchers.Default)
