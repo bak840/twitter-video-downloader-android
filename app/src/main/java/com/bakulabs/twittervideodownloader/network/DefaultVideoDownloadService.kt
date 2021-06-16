@@ -51,7 +51,7 @@ class DefaultVideoDownloadService @Inject constructor(private val resolver: Cont
 
                     val uri = resolver.insert(collection, values)
 
-                    uri?.let {
+                    uri?.let { it ->
                         resolver.openOutputStream(uri)?.use { outputStream ->
                             val sink = outputStream.sink().buffer()
 
@@ -78,6 +78,7 @@ class DefaultVideoDownloadService @Inject constructor(private val resolver: Cont
         }.flowOn(Dispatchers.Default)
     }
 
+    @Suppress("DEPRECATION")
     private suspend fun downloadLegacy(
         url: String,
         name: String
